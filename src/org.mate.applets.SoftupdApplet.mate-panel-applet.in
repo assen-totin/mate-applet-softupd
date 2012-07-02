@@ -1,0 +1,23 @@
+[Applet Factory]
+Id=SoftupdAppletFactory
+Location=@LIBEXECDIR@/mate-panel/softupd_applet
+Name=Software Updates
+Name[en_GB]=Software Updates
+Name[bg_BG]=Нови пакети
+Name[ru_RU]=Обновления
+Description=Notify on software updates
+Description[en_GB]=Notify on software updates
+Description[bg_BG]=Уведомление за нови пакети
+Description[ru_RU]=Уведомление об обновлениях
+
+[SoftupdApplet]
+Name=Software Updates
+Name[en_GB]=Software Updates
+Name[bg_BG]=Нови пакети
+Name[ru_RU]=Обновления
+Description=Notify on software updates
+Description[en_GB]=Notify on software updates
+Description[bg_BG]=Уведомление за нови пакети
+Description[ru_RU]=Уведомление об обновлениях
+Icon=applet_softupd
+MateComponentId=OAFIID:MATE_SoftupdApplet

@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.mate.panel.applet.SoftupdAppletFactory
+Exec=@LIBEXECDIR@/mate-panel/softupd_applet
+

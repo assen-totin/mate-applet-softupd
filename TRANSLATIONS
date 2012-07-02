@@ -1,0 +1,10 @@
+xgettext -d softupd -s -k_ -o po/softupd.pot src/main.c
+
+mkdir po/bg_BG
+
+msginit -l bg_BG.UTF-8 -o po/bg_BG/softupd.po -i po/softupd.pot
+
+msgfmt -c -v -o po/bg_BG/softupd.mo po/bg_BG/softupd.po
+
+cp po/bg_BG/softupd.mo /usr/share/locale/bg_BG/LC_MESSAGES
+
