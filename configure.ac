@@ -183,7 +183,7 @@ PKG_CHECK_MODULES([LIBNOTIFY], [libnotify])
 AC_CONFIG_FILES([Makefile src/Makefile po/Makefile])
 
 # Service files
-AC_CONFIG_FILES([src/org.mate.applets.SoftupdApplet.mate-panel-applet src/org.mate.panel.applet.SoftupdApplet.service])
+AC_CONFIG_FILES([src/org.mate.applets.SoftupdApplet.mate-panel-applet src/org.mate.panel.applet.SoftupdApplet.service mate-applet-softupd.spec])
 
 # Icons
 AC_DEFINE_UNQUOTED([APPLET_ICON_PATH], ["$PIXMAPDIR"], [Define icons location])

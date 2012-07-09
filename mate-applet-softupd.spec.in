@@ -1,0 +1,82 @@
+Summary: MATE Software Update Applet 
+Name: mate-applet-softupd
+Version: @PACKAGE_VERSION@ 
+Release: 1
+Group: System
+License: GPL
+Source: http://bilbo.online.bg/~assen/mate-applet/mate-applet-softupd-@PACKAGE_VERSION@.tar.gz
+BuildRoot: /var/tmp/%{name}-buildroot
+Requires: libmate-panel-applet-3 >= 1.3.0
+
+%description
+Software updtes notification applet for the MATE desktop environment.
+Supports YUM and APT (backend chosen at compile time).
+
+%prep
+%setup -q
+
+%build
+./configure --prefix=/usr
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/usr/libexec/mate-panel
+mkdir -p $RPM_BUILD_ROOT/usr/share/pixmaps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/16x16/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/22x22/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/24x24/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/32x32/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/mate-panel/applets
+mkdir -p $RPM_BUILD_ROOT/usr/share/dbus-1/services
+
+for DIR in ``; do
+done
+
+mkdir -p $RPM_BUILD_ROOT/usr/share/locale/bg_BG/LC_MESSAGES
+mkdir -p $RPM_BUILD_ROOT/usr/share/locale/en_GB/LC_MESSAGES
+mkdir -p $RPM_BUILD_ROOT/usr/share/locale/en_US/LC_MESSAGES
+mkdir -p $RPM_BUILD_ROOT/usr/share/locale/ru_RU/LC_MESSAGES
+
+install -s -m 755 src/softupd_applet $RPM_BUILD_ROOT/usr/libexec/mate-panel/softupd_applet
+install -m 644 src/images/applet_softupd_on.png $RPM_BUILD_ROOT/usr/share/pixmaps/applet_softupd_on.png
+install -m 644 src/images/applet_softupd_off.png $RPM_BUILD_ROOT/usr/share/pixmaps/applet_softupd_off.png
+install -m 644 src/images/applet_softupd.16.png $RPM_BUILD_ROOT/usr/share/icons/hicolor/16x16/apps/applet_softupd.png
+install -m 644 src/images/applet_softupd.22.png $RPM_BUILD_ROOT/usr/share/icons/hicolor/22x22/apps/applet_softupd.png
+install -m 644 src/images/applet_softupd.24.png $RPM_BUILD_ROOT/usr/share/icons/hicolor/24x24/apps/applet_softupd.png
+install -m 644 src/images/applet_softupd.32.png $RPM_BUILD_ROOT/usr/share/icons/hicolor/32x32/apps/applet_softupd.png
+install -m 755 src/org.mate.applets.SoftupdApplet.mate-panel-applet $RPM_BUILD_ROOT/usr/share/mate-panel/applets/org.mate.applets.SoftupdApplet.mate-panel-applet
+install -m 755 src/org.mate.panel.applet.SoftupdApplet.service $RPM_BUILD_ROOT/usr/share/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service 
+install -m 644 po/bg_BG/softupd.mo $RPM_BUILD_ROOT/usr/share/locale/bg_BG/LC_MESSAGES/softupd.mo
+install -m 644 po/en_GB/softupd.mo $RPM_BUILD_ROOT/usr/share/locale/en_GB/LC_MESSAGES/softupd.mo
+install -m 644 po/en_US/softupd.mo $RPM_BUILD_ROOT/usr/share/locale/en_US/LC_MESSAGES/softupd.mo
+install -m 644 po/ru_RU/softupd.mo $RPM_BUILD_ROOT/usr/share/locale/ru_RU/LC_MESSAGES/softupd.mo
+
+%post
+gtk-update-icon-cache -f -t /usr/share/icons/hicolor
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%doc README TODO LICENSE CHANGES AUTHOR BUGS
+
+/usr/libexec/mate-panel/softupd_applet
+/usr/share/pixmaps/applet_softupd_on.png
+/usr/share/pixmaps/applet_softupd_off.png
+/usr/share/icons/hicolor/16x16/apps/applet_softupd.png
+/usr/share/icons/hicolor/22x22/apps/applet_softupd.png
+/usr/share/icons/hicolor/24x24/apps/applet_softupd.png
+/usr/share/icons/hicolor/32x32/apps/applet_softupd.png
+/usr/share/mate-panel/applets/org.mate.applets.SoftupdApplet.mate-panel-applet
+/usr/share/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service
+/usr/share/locale/bg_BG/LC_MESSAGES/softupd.mo
+/usr/share/locale/en_GB/LC_MESSAGES/softupd.mo
+/usr/share/locale/en_US/LC_MESSAGES/softupd.mo
+/usr/share/locale/ru_RU/LC_MESSAGES/softupd.mo
+
+%changelog
+* Wed Jun 27 2012 Assen Totin <assen.totin@gmail.com>
+- Release 0.0.1
+      
