@@ -167,6 +167,7 @@ else
 		AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$UPDATEMANAGER_INSTALLER"],[Define where is the installer binary])
 		SELECTED_INSTALLER="update-manager"
 	fi
+fi
 
 # Checks for libraries.
 
@@ -193,6 +194,7 @@ AC_OUTPUT
 echo
 echo "Configuration complete:"
 echo " * Selected backend: $SELECTED_BACKEND"
+echo " * Selected installer: $SELECTED_INSTALLER"
 echo
 echo "Now, run make."
 echo 
