@@ -46,3 +46,7 @@ msgstr "Имате чакащи пакети."
 msgid "You have %u updates."
 msgstr "Имате %u чакащи пакета."
 
+# src/main.c:73
+msgid "You have to update your system manually."
+msgstr "Трябва ръчно да инсталирате пакетите."
+

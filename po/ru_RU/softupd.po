@@ -47,3 +47,7 @@ msgstr "У %u пакетов есть обновления."
 msgid "Software updates available."
 msgstr "Поступили новые пакеты."
 
+# src/main.c:73
+msgid "You have to update your system manually."
+msgstr "Вам надо установить обновления вручную."
+

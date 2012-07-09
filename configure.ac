@@ -155,8 +155,9 @@ fi
 
 # Select which software installer to use
 if test $FOUND_INSTALLER = "no" ; then
-        echo "*** No suitable installer found. Cannot continue."
-        exit
+        echo "*** No suitable installer found. You will have to update the system manually."
+	SELECTED_INSTALLER="none"
+        #exit
 else
         echo "Chosing installer..."
 

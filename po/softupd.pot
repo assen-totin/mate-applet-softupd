@@ -45,3 +45,6 @@ msgstr ""
 msgid "You have %u updates."
 msgstr ""
 
+# src/main.c:73
+msgid "You have to update your system manually."
+msgstr ""

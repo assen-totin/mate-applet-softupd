@@ -35,10 +35,13 @@ void push_notification (gchar *title, gchar *body, gchar *icon) {
 static void quitDialogOK( GtkWidget *widget, gpointer data ){
         GtkWidget *quitDialog = data;
         gtk_widget_destroy(quitDialog);
-	int pid = fork();
-	if (pid == 0) {
-		execl(INSTALLER_BINARY, NULL);
-	}
+
+	#ifdef INSTALLER_BINARY
+		int pid = fork();
+		if (pid == 0) {
+			execl(INSTALLER_BINARY, NULL);
+		}
+	#endif
 }
 
 
@@ -57,20 +60,30 @@ static gboolean applet_on_button_press (GtkWidget *event_box, GdkEventButton *ev
 	char msg1[1024], msg2[1024];
 	sprintf(&msg1[0], _("Pending updates: %u"), glob_data.pending);
 	if (glob_data.pending > 0) {
-		sprintf(&msg2[0], _("Install updates?"));
-		sprintf(&msg1[0],"%s\n%s", &msg1[0], &msg2[0]);
+		#ifdef INSTALLER_BINARY
+			sprintf(&msg1[0],"%s\n%s", &msg1[0], _("Install updates?"));
+		#else
+			sprintf(&msg1[0],"%s\n%s", &msg1[0], _("You have to update your system manually."));
+		#endif
 	}
 	
 	label = gtk_label_new (&msg1[0]);
 
 	GtkWidget *quitDialog = gtk_dialog_new_with_buttons ("Software Updater", GTK_WINDOW(data), GTK_DIALOG_MODAL, NULL);
 	GtkWidget *buttonOK = gtk_dialog_add_button (GTK_DIALOG(quitDialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
-	GtkWidget *buttonCancel = gtk_dialog_add_button (GTK_DIALOG(quitDialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+
+	#ifdef INSTALLER_BINARY
+		GtkWidget *buttonCancel = gtk_dialog_add_button (GTK_DIALOG(quitDialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+	#endif
 
 	gtk_dialog_set_default_response (GTK_DIALOG (quitDialog), GTK_RESPONSE_CANCEL);
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(quitDialog)->vbox), label);
         g_signal_connect (G_OBJECT(buttonOK), "clicked", G_CALLBACK (quitDialogOK), (gpointer) quitDialog);
-        g_signal_connect (G_OBJECT(buttonCancel), "clicked", G_CALLBACK (quitDialogCancel), (gpointer) quitDialog);
+
+	#ifdef INSTALLER_BINARY
+	        g_signal_connect (G_OBJECT(buttonCancel), "clicked", G_CALLBACK (quitDialogCancel), (gpointer) quitDialog);
+	#endif
+
         gtk_widget_show_all (GTK_WIDGET(quitDialog));
 
 	return TRUE;
