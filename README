@@ -4,8 +4,10 @@ The notification is displayed in two ways:
 - by changing the icon of the applet
 - by sending a notification to the notification-daemon
 
-The applet depends on information from various backends (depending on the 
-underlying distribution).
+
+1. The applet can fetch information about available updates from various 
+backends (depending on the underlying distribution). The exact backend is
+selected at compiel time.
 
 A. For all systems:
 - package-kit is most preferred backend as it should handle transparently
@@ -30,8 +32,20 @@ local database and does not check with repositories (like "apt-get update"
 does). Therefore, someone has to update the database (like, update-manager
 on start-up).
 
+
+2. The applet spawns a software installer to actually apply the updates. 
+The exact software installer is detected at compile time from the following:
+
+A. gpk-update-viewer - mostly found on systems which use PackageKit. Note that
+it may be packaged as a part of the 'gnome-packagekit'.
+
+B. update-manager - mostly found on systems which use Update Manager to handle
+software updates. 
+
+
 IMPORTANT! This free softwarte is released with hope that it will be useful, 
 but with no warranty of any type at all. Use it at your own risk. You are free
 to distribute it as well as to modify it as long as you preserve the original 
 License. See LICENSE file for details.
+
 

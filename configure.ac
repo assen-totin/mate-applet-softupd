@@ -132,9 +132,41 @@ else
 	AC_SUBST([SRC_BACKEND])
 fi
 
+# Check which software installer to use
+FOUND_INSTALLER="no"
+
+# Check for gpk-update-viewer
+AC_CHECK_PROG([CHECK_GPKUPDATEVIEWER],[gpk-update-viewer],[yes],[no])
+if test $CHECK_GPKUPDATEVIEWER = "no" ; then
+        echo "*** gpk-update-viewer not found."
+else
+        FOUND_INSTALLER="yes"
+        GPKUPDATEVIEWER_INSTALLER=`which gpk-update-viewer`
+fi
+
+# Check for update-manager
+AC_CHECK_PROG([CHECK_UPDATEMANAGER],[update-manager],[yes],[no])
+if test $CHECK_UPDATEMANAGER = "no" ; then
+        echo "*** update-manager not found."
+else
+        FOUND_INSTALLER="yes"
+        UPDATEMANAGER_INSTALLER=`which gpk-update-viewer`
+fi
+
 # Select which software installer to use
-GPK_UPDATE_VIEWER=`which gpk-update-viewer`
-AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$GPK_UPDATE_VIEWER"],[Define where is the installer binary])
+if test $FOUND_INSTALLER = "no" ; then
+        echo "*** No suitable installer found. Cannot continue."
+        exit
+else
+        echo "Chosing installer..."
+
+        if test $CHECK_GPKUPDATEVIEWER != "no" ; then
+		AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$GPKUPDATEVIEWER_INSTALLER"],[Define where is the installer binary])
+                SELECTED_INSTALLER="gpk-update-viewer"
+	elif test $CHECK_UPDATEMANAGER != "no" ; then
+		AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$UPDATEMANAGER_INSTALLER"],[Define where is the installer binary])
+		SELECTED_INSTALLER="update-manager"
+	fi
 
 # Checks for libraries.
 
