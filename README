@@ -7,7 +7,12 @@ The notification is displayed in two ways:
 The applet depends on information from various backends (depending on the 
 underlying distribution).
 
-A. For systems which use yum (RHEL, CentOS, Fedora, Scientific etc.):
+A. For all systems:
+- package-kit is most preferred backend as it should handle transparently
+any required update protocol.
+
+B. For systems which use yum (RHEL, CentOS, Fedora, Scientific etc.)
+but do not have package-kit:
 
 - yum-updatesd is preferred (as it is used D-Bus to report status).
 The availability of updates is checked by the daemon, which then broadcasts
@@ -17,7 +22,8 @@ to 600 second (see /etc/yum/yum-updatesd.conf).
 - yum is used elsewhere (but it is ugly as we depend on counting output 
 lines). Checks are performed each 10 minutes by querying all repos.
 
-B. For systems which use apt (Debian, Ubuntu, Mint etc.)
+C. For systems which use apt (Debian, Ubuntu, Mint etc.) but do not have 
+package-kit:
 
 - apt-check from the update-notifier is preferred. Note that it only reads the
 local database and does not check with repositories (like "apt-get update" 

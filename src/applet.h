@@ -16,6 +16,7 @@ struct softupd_applet_data {
 struct softupd_applet_data glob_data;
 
 // Prototypes
+gboolean packagekit_main();
 int yumupdatesd_main();
 void yum_main();
 void aptcheck_main();

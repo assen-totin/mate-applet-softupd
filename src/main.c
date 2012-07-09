@@ -110,6 +110,13 @@ static gboolean applet_check_icon (gpointer data) {
 static gboolean applet_listener() {
 	GMainLoop *loop;
 
+	#ifdef HAVE_PACKAGEKIT
+		if(packagekit_main())
+			return TRUE;
+		else
+			return FALSE;
+	#endif
+
 	#ifdef HAVE_YUMUPDATESD
 		if(yumupdatesd_main())
 			return TRUE;

@@ -1,10 +1,21 @@
+1. To create templates for translation: 
+
+# Get all strings from main.c
 xgettext -d softupd -s -k_ -o po/softupd.pot src/main.c
 
-mkdir po/bg_BG
+2. To add your translation
 
-msginit -l bg_BG.UTF-8 -o po/bg_BG/softupd.po -i po/softupd.pot
+# Create a xx_XX directory inside po/
+mkdir po/xx_XX
 
-msgfmt -c -v -o po/bg_BG/softupd.mo po/bg_BG/softupd.po
+# Init your translation from template
+msginit -l xx_XX.UTF-8 -o po/xx_XX/softupd.po -i po/softupd.pot
 
-cp po/bg_BG/softupd.mo /usr/share/locale/bg_BG/LC_MESSAGES
+# Edit the new .po file and set the desired strings.
+
+3. To compile and install (will be automatically done by the Makefile):
+
+msgfmt -c -v -o po/xx_XX/softupd.mo po/xx_XX/softupd.po
+
+cp po/xx_XX/softupd.mo /usr/share/locale/xx_XX/LC_MESSAGES
 

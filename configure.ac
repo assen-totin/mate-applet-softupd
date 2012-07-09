@@ -47,6 +47,18 @@ fi
 # Check for backend tools
 FOUND_BACKEND="no"
 
+## Check for backend: packagekit
+AC_CHECK_PROG([CHECK_PACKAGEKIT],[pkcon],[yes],[no])
+OBJS_BACKEND_PACKAGEKIT="no"
+SRC_BACKEND_PACKAGEKIT="no"
+if test $CHECK_PACKAGEKIT = "no" ; then
+        echo "*** package-kit not found."
+else
+        FOUND_BACKEND="yes"
+        OBJS_BACKEND_PACKAGEKIT=backend-packagekit.o
+        SRC_BACKEND_PACKAGEKIT=backend-packagekit.c
+fi
+
 ## Check for backend: yum-updatesd
 AC_CHECK_PROG([CHECK_YUMUPDATESD],[yum-updatesd],[yes],[no])
 OBJS_BACKEND_YUMUPDATESD="no"
@@ -84,20 +96,6 @@ else
 	SRC_BACKEND_APTCHECK=backend-aptcheck.c
 fi
 
-### Check for backend: apt-get
-#AC_CHECK_PROG([CHECK_APTGET],[apt-get],[yes],[no])
-#OBJS_BACKEND_APTGET="no"
-#SRC_BACKEND_APTGET="no"
-#if test $CHECK_APTGET = "no" ; then
-#        echo "*** apt-get not found."
-#else
-#        FOUND_BACKEND="yes"
-#  	 APTGET_PROG = `which apt-get`
-#        OBJS_BACKEND_APTGET=backend-aptget.o
-#        SRC_BACKEND_APTGET=backend-aptget.c
-#fi
-
-
 ## Select which backend to use
 if test $FOUND_BACKEND = "no" ; then
 	echo "*** No suitable backend found. Cannot continue."
@@ -107,7 +105,12 @@ else
 	OBJS_BACKEND="none"
 	SRC_BACKEND="none"
 	SELECTED_BACKEND="none"
-	if test $OBJS_BACKEND_YUMUPDATESD != "no" ; then
+        if test $OBJS_BACKEND_PACKAGEKIT != "no" ; then
+                OBJS_BACKEND=$OBJS_BACKEND_PACKAGEKIT
+                SRC_BACKEND=$SRC_BACKEND_PACKAGEKIT
+                AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
+                SELECTED_BACKEND="package-kit"
+	elif test $OBJS_BACKEND_YUMUPDATESD != "no" ; then
 		OBJS_BACKEND=$OBJS_BACKEND_YUMUPDATESD
 		SRC_BACKEND=$SRC_BACKEND_YUMUPDATESD
 		AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
@@ -124,12 +127,6 @@ else
 		AC_DEFINE([HAVE_APTCHECK],[1],[Define if apt-check was found])
 		AC_DEFINE_UNQUOTED([APTCHECK_BINARY],["$APTCHECK_PROG"],[Define where is the apt-check binary])
 		SELECTED_BACKEND="apt-check"
-#        elif test $OBJS_BACKEND_APTGET != "no" ; then
-#                OBJS_BACKEND=$OBJS_BACKEND_APTGET
-#                SRC_BACKEND=$SRC_BACKEND_APTGET
-#                AC_DEFINE([HAVE_APTGET],[1],[Define if apt-check was found])
-#                AC_DEFINE_UNQUOTED([APTGET_BINARY],["$APTGET_PROG"],[Define where is the apt-get binary])
-#                SELECTED_BACKEND="apt-check"
 	fi
 	AC_SUBST([OBJS_BACKEND])
 	AC_SUBST([SRC_BACKEND])
