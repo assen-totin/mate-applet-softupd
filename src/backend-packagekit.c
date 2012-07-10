@@ -7,6 +7,8 @@
 #include "../config.h"
 #include "applet.h"
 
+#include <stdio.h>
+
 void callback_ready(GObject *source_object, GAsyncResult *res, gpointer user_data) {
 	PkClient *client = PK_CLIENT(source_object);
 	GError *error = NULL;
@@ -17,7 +19,8 @@ void callback_ready(GObject *source_object, GAsyncResult *res, gpointer user_dat
 
 	list = pk_results_get_package_array(results);
 
-	glob_data.pending = list->len;
+	if (list != NULL)
+		glob_data.pending = list->len;
 
 	int tmp_icon = glob_data.icon_status;
 
@@ -34,9 +37,11 @@ void callback_ready(GObject *source_object, GAsyncResult *res, gpointer user_dat
 }
 
 gboolean plugin_loop(gpointer user_data) {
-        PkClient *client = (PkClient*) user_data;
+        PkClient *client = pk_client_new();
 
         pk_client_get_updates_async(client, pk_bitfield_value(PK_FILTER_ENUM_NONE), NULL, NULL, NULL, (GAsyncReadyCallback) callback_ready, NULL);
+
+	g_object_unref(client);
 
         return TRUE;
 }
@@ -46,19 +51,16 @@ gboolean packagekit_main() {
 	GError *error = NULL;
 	GVariant *retval = NULL;
 	GMainLoop *loop;
-	PkClient *client;
 	
 	g_type_init();
 
 	loop = g_main_loop_new(NULL, FALSE);
 
-	client = pk_client_new();
-
-	g_timeout_add(REFRESH_TIME, plugin_loop, (gpointer) client);
+	g_timeout_add(REFRESH_TIME, plugin_loop, NULL);
 
 	g_main_loop_run(loop);
 
-	g_object_unref(client);
+	//g_object_unref(client);
 
 	return TRUE;
 }
