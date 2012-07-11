@@ -7,7 +7,7 @@ The notification is displayed in two ways:
 
 1. The applet can fetch information about available updates from various 
 backends (depending on the underlying distribution). The exact backend is
-selected at compiel time.
+selected at compile time.
 
 A. For all systems:
 - package-kit is most preferred backend as it should handle transparently
