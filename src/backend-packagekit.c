@@ -9,8 +9,6 @@
 
 #include <stdio.h>
 
-int glob_flag = 0;
-
 void callback_ready(GObject *source_object, GAsyncResult *res, gpointer user_data) {
 	PkClient *client = PK_CLIENT(source_object);
 	GError *error = NULL;
@@ -40,23 +38,12 @@ void callback_ready(GObject *source_object, GAsyncResult *res, gpointer user_dat
 
 	if (results != NULL)
 		g_object_unref(results);
-
-	glob_flag = 0;
 }
 
 gboolean plugin_loop(gpointer user_data) {
         PkClient *client = pk_client_new();
 
-	glob_flag = 1;
-
         pk_client_get_updates_async(client, pk_bitfield_value(PK_FILTER_ENUM_NONE), NULL, NULL, NULL, (GAsyncReadyCallback) callback_ready, NULL);
-
-	// Wait until the async callback completes
-	while (glob_flag == 1)
-		sleep(10);
-
-	if (client != NULL)
-		g_object_unref(client);
 
         return TRUE;
 }
