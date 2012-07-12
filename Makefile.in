@@ -28,6 +28,5 @@ maintainer-clean:
 	rm -f mate-applet-softupd.spec
 
 rpmbuild:
-	make all
-	rpmbuild -bb --define "_sourcedir `pwd`" mate-applet-softupd.spec
+	rpmbuild -bb mate-applet-softupd.spec
  
