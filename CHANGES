@@ -1,5 +1,11 @@
+Jul 12, 2012 - Version 0.1.0
+============================
+
+* Added Package-Kit as a back-end and set it as most preferred one.
+* Added spec file to build an RPM from the local source directory.
+
 Jun 27, 2012 - Version 0.0.1
 ============================
 
-Initial release.
+* Initial release.
 
