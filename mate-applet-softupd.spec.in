@@ -21,62 +21,59 @@ make
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/usr/libexec/mate-panel
-mkdir -p $RPM_BUILD_ROOT/usr/share/pixmaps
-mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/16x16/apps
-mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/22x22/apps
-mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/24x24/apps
-mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/32x32/apps
-mkdir -p $RPM_BUILD_ROOT/usr/share/mate-panel/applets
-mkdir -p $RPM_BUILD_ROOT/usr/share/dbus-1/services
+mkdir -p $RPM_BUILD_ROOT@LIBEXECDIR@/mate-panel
+mkdir -p $RPM_BUILD_ROOT@PIXMAPDIR@
+mkdir -p $RPM_BUILD_ROOT@ICONSDIR@/hicolor/16x16/apps
+mkdir -p $RPM_BUILD_ROOT@ICONSDIR@/hicolor/22x22/apps
+mkdir -p $RPM_BUILD_ROOT@ICONSDIR@/hicolor/24x24/apps
+mkdir -p $RPM_BUILD_ROOT@ICONSDIR@/hicolor/32x32/apps
+mkdir -p $RPM_BUILD_ROOT@DATAROOTDIR@/mate-panel/applets
+mkdir -p $RPM_BUILD_ROOT@DATAROOTDIR@/dbus-1/services
 
-for DIR in ``; do
+for DIR in `find po/ -maxdepth 1 -mindepth 1 -type d | sed s/po.//g`; do
+	mkdir -p $RPM_BUILD_ROOT@LOCALEDIR@/$DIR/LC_MESSAGES
 done
 
-mkdir -p $RPM_BUILD_ROOT/usr/share/locale/bg_BG/LC_MESSAGES
-mkdir -p $RPM_BUILD_ROOT/usr/share/locale/en_GB/LC_MESSAGES
-mkdir -p $RPM_BUILD_ROOT/usr/share/locale/en_US/LC_MESSAGES
-mkdir -p $RPM_BUILD_ROOT/usr/share/locale/ru_RU/LC_MESSAGES
+install -s -m 755 src/softupd_applet $RPM_BUILD_ROOT@LIBEXECDIR@/mate-panel/softupd_applet
+install -m 644 src/images/applet_softupd_on.png $RPM_BUILD_ROOT@PIXMAPDIR@/applet_softupd_on.png
+install -m 644 src/images/applet_softupd_off.png $RPM_BUILD_ROOT@PIXMAPDIR@/applet_softupd_off.png
+install -m 644 src/images/applet_softupd.16.png $RPM_BUILD_ROOT@ICONSDIR@/hicolor/16x16/apps/applet_softupd.png
+install -m 644 src/images/applet_softupd.22.png $RPM_BUILD_ROOT@ICONSDIR@/hicolor/22x22/apps/applet_softupd.png
+install -m 644 src/images/applet_softupd.24.png $RPM_BUILD_ROOT@ICONSDIR@/hicolor/24x24/apps/applet_softupd.png
+install -m 644 src/images/applet_softupd.32.png $RPM_BUILD_ROOT@ICONSDIR@/hicolor/32x32/apps/applet_softupd.png
+install -m 755 src/org.mate.applets.SoftupdApplet.mate-panel-applet $RPM_BUILD_ROOT@DATAROOTDIR@/mate-panel/applets/org.mate.applets.SoftupdApplet.mate-panel-applet
+install -m 755 src/org.mate.panel.applet.SoftupdApplet.service $RPM_BUILD_ROOT@DATAROOTDIR@/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service
 
-install -s -m 755 src/softupd_applet $RPM_BUILD_ROOT/usr/libexec/mate-panel/softupd_applet
-install -m 644 src/images/applet_softupd_on.png $RPM_BUILD_ROOT/usr/share/pixmaps/applet_softupd_on.png
-install -m 644 src/images/applet_softupd_off.png $RPM_BUILD_ROOT/usr/share/pixmaps/applet_softupd_off.png
-install -m 644 src/images/applet_softupd.16.png $RPM_BUILD_ROOT/usr/share/icons/hicolor/16x16/apps/applet_softupd.png
-install -m 644 src/images/applet_softupd.22.png $RPM_BUILD_ROOT/usr/share/icons/hicolor/22x22/apps/applet_softupd.png
-install -m 644 src/images/applet_softupd.24.png $RPM_BUILD_ROOT/usr/share/icons/hicolor/24x24/apps/applet_softupd.png
-install -m 644 src/images/applet_softupd.32.png $RPM_BUILD_ROOT/usr/share/icons/hicolor/32x32/apps/applet_softupd.png
-install -m 755 src/org.mate.applets.SoftupdApplet.mate-panel-applet $RPM_BUILD_ROOT/usr/share/mate-panel/applets/org.mate.applets.SoftupdApplet.mate-panel-applet
-install -m 755 src/org.mate.panel.applet.SoftupdApplet.service $RPM_BUILD_ROOT/usr/share/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service 
-install -m 644 po/bg_BG/softupd.mo $RPM_BUILD_ROOT/usr/share/locale/bg_BG/LC_MESSAGES/softupd.mo
-install -m 644 po/en_GB/softupd.mo $RPM_BUILD_ROOT/usr/share/locale/en_GB/LC_MESSAGES/softupd.mo
-install -m 644 po/en_US/softupd.mo $RPM_BUILD_ROOT/usr/share/locale/en_US/LC_MESSAGES/softupd.mo
-install -m 644 po/ru_RU/softupd.mo $RPM_BUILD_ROOT/usr/share/locale/ru_RU/LC_MESSAGES/softupd.mo
+for DIR in `find po/ -maxdepth 1 -mindepth 1 -type d | sed s/po.//g`; do
+	install -m 644 po/$DIR/softupd.mo $RPM_BUILD_ROOT@LOCALEDIR@/$DIR/LC_MESSAGES/softupd.mo
+done
+
+%find_lang softupd
 
 %post
-gtk-update-icon-cache -f -t /usr/share/icons/hicolor
+gtk-update-icon-cache -f -t @ICONSDIR@/hicolor
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files
+%files -f softupd.lang
 %defattr(-,root,root)
 %doc README TODO LICENSE CHANGES AUTHOR BUGS
 
-/usr/libexec/mate-panel/softupd_applet
-/usr/share/pixmaps/applet_softupd_on.png
-/usr/share/pixmaps/applet_softupd_off.png
-/usr/share/icons/hicolor/16x16/apps/applet_softupd.png
-/usr/share/icons/hicolor/22x22/apps/applet_softupd.png
-/usr/share/icons/hicolor/24x24/apps/applet_softupd.png
-/usr/share/icons/hicolor/32x32/apps/applet_softupd.png
-/usr/share/mate-panel/applets/org.mate.applets.SoftupdApplet.mate-panel-applet
-/usr/share/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service
-/usr/share/locale/bg_BG/LC_MESSAGES/softupd.mo
-/usr/share/locale/en_GB/LC_MESSAGES/softupd.mo
-/usr/share/locale/en_US/LC_MESSAGES/softupd.mo
-/usr/share/locale/ru_RU/LC_MESSAGES/softupd.mo
+@LIBEXECDIR@/mate-panel/softupd_applet
+@PIXMAPDIR@/applet_softupd_on.png
+@PIXMAPDIR@/applet_softupd_off.png
+@ICONSDIR@/hicolor/16x16/apps/applet_softupd.png
+@ICONSDIR@/hicolor/22x22/apps/applet_softupd.png
+@ICONSDIR@/hicolor/24x24/apps/applet_softupd.png
+@ICONSDIR@/hicolor/32x32/apps/applet_softupd.png
+@DATAROOTDIR@/mate-panel/applets/org.mate.applets.SoftupdApplet.mate-panel-applet
+@DATAROOTDIR@/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service
 
 %changelog
 * Wed Jun 27 2012 Assen Totin <assen.totin@gmail.com>
 - Release 0.0.1
-      
+
+* Thu Jul 12 2012 Assen Totin <assen.totin@gmail.com>
+- Release 0.1.0
+
