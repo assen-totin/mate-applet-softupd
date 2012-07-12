@@ -13,7 +13,7 @@ Software updtes notification applet for the MATE desktop environment.
 Supports YUM and APT (backend chosen at compile time).
 
 %prep
-%setup -q
+#%setup -q
 
 %build
 ./configure --prefix=/usr
@@ -71,9 +71,9 @@ rm -rf $RPM_BUILD_ROOT
 @DATAROOTDIR@/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service
 
 %changelog
-* Wed Jun 27 2012 Assen Totin <assen.totin@gmail.com>
-- Release 0.0.1
-
 * Thu Jul 12 2012 Assen Totin <assen.totin@gmail.com>
 - Release 0.1.0
+
+* Wed Jun 27 2012 Assen Totin <assen.totin@gmail.com>
+- Release 0.0.1
 

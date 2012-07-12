@@ -28,5 +28,5 @@ maintainer-clean:
 	rm -f mate-applet-softupd.spec
 
 rpmbuild:
-	rpmbuild -bb mate-applet-softupd.spec
+	rpmbuild -bb --define "_builddir @TOPLEVELDIR@" mate-applet-softupd.spec
  
