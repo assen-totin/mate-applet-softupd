@@ -16,15 +16,15 @@ void callback_ready(GObject *source_object, GAsyncResult *res, gpointer user_dat
 	GPtrArray *list = NULL;
 
 	results = pk_client_generic_finish(PK_CLIENT(client), res, &error);
-
 	list = pk_results_get_package_array(results);
 
 	if (list != NULL) {
 		glob_data.pending = list->len;
 		g_ptr_array_unref(list);
 	}
-	else
-		glob_data.pending = 0;
+	// DO nothing on ELSE - if results are NULL, it usually means timeout. 
+	//else
+	//	glob_data.pending = 0;
 
 	int tmp_icon = glob_data.icon_status;
 
@@ -36,11 +36,13 @@ void callback_ready(GObject *source_object, GAsyncResult *res, gpointer user_dat
 	if (tmp_icon != glob_data.icon_status)
 		glob_data.flip_icon = 1;
 
-	if (results != NULL)
+	if (results != NULL) {
 		g_object_unref(results);
+	}
 }
 
 gboolean plugin_loop(gpointer user_data) {
+	GError *error = NULL;
         PkClient *client = pk_client_new();
 
         pk_client_get_updates_async(client, pk_bitfield_value(PK_FILTER_ENUM_NONE), NULL, NULL, NULL, (GAsyncReadyCallback) callback_ready, NULL);
