@@ -36,10 +36,12 @@ on start-up).
 2. The applet spawns a software installer to actually apply the updates. 
 The exact software installer is detected at compile time from the following:
 
-A. gpk-update-viewer - mostly found on systems which use PackageKit. Note that
+A. yumex - mostly found on systems which use YUM. 
+
+B. gpk-update-viewer - mostly found on systems which use PackageKit. Note that
 it may be packaged as a part of the 'gnome-packagekit'.
 
-B. update-manager - mostly found on systems which use Update Manager to handle
+C. update-manager - mostly found on systems which use Update Manager to handle
 software updates. 
 
 

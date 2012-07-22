@@ -137,6 +137,15 @@ fi
 # Check which software installer to use
 FOUND_INSTALLER="no"
 
+# Check for yumex
+AC_CHECK_PROG([CHECK_YUMEXVIEWER],[yumex],[yes],[no])
+if test $CHECK_YUMEXVIEWER = "no" ; then
+        echo "*** yumex not found."
+else
+        FOUND_INSTALLER="yes"
+        YUMEXVIEWER_INSTALLER=`which yumex`
+fi
+
 # Check for gpk-update-viewer
 AC_CHECK_PROG([CHECK_GPKUPDATEVIEWER],[gpk-update-viewer],[yes],[no])
 if test $CHECK_GPKUPDATEVIEWER = "no" ; then
@@ -159,11 +168,14 @@ fi
 if test $FOUND_INSTALLER = "no" ; then
         echo "*** No suitable installer found. You will have to update the system manually."
 	SELECTED_INSTALLER="none"
-        #exit
+
 else
         echo "Chosing installer..."
 
-        if test $CHECK_GPKUPDATEVIEWER != "no" ; then
+        if test $CHECK_YUMEXVIEWER != "no" ; then
+                AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$YUMEXVIEWER_INSTALLER"],[Define where is the installer binary])
+                SELECTED_INSTALLER="yumex"
+        elif test $CHECK_GPKUPDATEVIEWER != "no" ; then
 		AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$GPKUPDATEVIEWER_INSTALLER"],[Define where is the installer binary])
                 SELECTED_INSTALLER="gpk-update-viewer"
 	elif test $CHECK_UPDATEMANAGER != "no" ; then
