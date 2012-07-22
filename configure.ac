@@ -180,7 +180,7 @@ PKG_CHECK_MODULES([GLIB], [glib-2.0])
 PKG_CHECK_MODULES([DBUS], [dbus-1])
 PKG_CHECK_MODULES([DBUS_GLIB], [dbus-glib-1])
 PKG_CHECK_MODULES([LIBMATEPANELAPPLET], [libmatepanelapplet-3.0])
-PKG_CHECK_MODULES([LIBNOTIFY], [libnotify])
+PKG_CHECK_MODULES([LIBMATENOTIFY], [libmatenotify])
 
 # Makefiles
 AC_CONFIG_FILES([Makefile src/Makefile po/Makefile])

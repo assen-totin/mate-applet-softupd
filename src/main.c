@@ -1,6 +1,6 @@
 #include <unistd.h>
 #include <mate-panel-applet.h>
-#include <libnotify/notify.h>
+#include <libmatenotify/notify.h>
 #include <libintl.h>
 
 #include "../config.h"
@@ -20,7 +20,7 @@ void push_notification (gchar *title, gchar *body, gchar *icon) {
 	GError* error = NULL;
 
 	notify_init(PACKAGE_NAME);
-        notification = notify_notification_new (title, body, icon);
+        notification = notify_notification_new (title, body, icon, NULL);
 
         notify_notification_set_timeout (notification, 5000);
 
