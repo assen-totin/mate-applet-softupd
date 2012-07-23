@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.66])
-AC_INIT([softupd], [0.2.0], [assen.totin@gmail.com])
+AC_INIT([softupd], [0.2.1], [assen.totin@gmail.com])
 ORIG_CMDLINE_ARGS=$@
 AC_SUBST([ORIG_CMDLINE_ARGS])
 AC_CONFIG_HEADERS([config.h])
