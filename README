@@ -6,8 +6,10 @@ The notification is displayed in two ways:
 
 
 1. The applet can fetch information about available updates from various 
-backends (depending on the underlying distribution). The exact backend is
-selected at compile time.
+backends (depending on the underlying distribution). The exact backend is 
+selected at compile time. You can either force a particular backend by 
+specifying --enable-backend=... to ./configure, or let it chose one of the
+available backends:
 
 A. For all systems:
 - package-kit is most preferred backend as it should handle transparently
@@ -34,7 +36,9 @@ on start-up).
 
 
 2. The applet spawns a software installer to actually apply the updates. 
-The exact software installer is detected at compile time from the following:
+The exact software installer is detected at compile time. You can either force 
+a particular installer by specifying --enable-installer=... to ./configure, or 
+let it chose one of the available installers:
 
 A. yumex - mostly found on systems which use YUM. 
 
