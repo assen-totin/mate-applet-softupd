@@ -13,8 +13,8 @@ PIXMAPDIR = @PIXMAPDIR@
 ICONSDIR = @ICONSDIR@
 DATAROOTDIR = @DATAROOTDIR@
 
-INCLUDES=`pkg-config --cflags-only-I dbus-1 glib-2.0 dbus-glib-1 libmatepanelapplet-3.0 libmatenotify packagekit-glib2`
-ADD_FLAGS=`pkg-config --libs dbus-1 glib-2.0 dbus-glib-1 libmatepanelapplet-3.0 libmatenotify packagekit-glib2`
+INCLUDES=`pkg-config --cflags-only-I glib-2.0 libmatepanelapplet-3.0 libmatenotify @ADDITIONAL_PACKAGES@`
+LIBS=`pkg-config --libs glib-2.0 libmatepanelapplet-3.0 libmatenotify @ADDITIONAL_PACKAGES@`
 
 TARGET = softupd_applet
 
@@ -71,5 +71,5 @@ uninstall:
 $(TARGET): main.c $(SRC_BACKEND)
 	$(CC) $(CFLAGS) $(INCLUDES) main.c
 	$(CC) $(CFLAGS) $(INCLUDES) $(SRC_BACKEND)
-	$(CC) -o $@ $(ADD_FLAGS) $(OBJS_MAIN) $(OBJS_BACKEND)
+	$(CC) -o $@ $(LIBS) $(OBJS_MAIN) $(OBJS_BACKEND)
 

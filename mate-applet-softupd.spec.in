@@ -6,17 +6,18 @@ Group: System
 License: GPL
 Source: http://bilbo.online.bg/~assen/mate-applet/mate-applet-softupd-@PACKAGE_VERSION@.tar.gz
 BuildRoot: /var/tmp/%{name}-buildroot
-Requires: libmate-panel-applet-3 >= 1.3.0
+Requires: mate-panel >= 1.3.0, libmatenotify >= 1.2.0
 
 %description
 Software updtes notification applet for the MATE desktop environment.
 Supports YUM and APT (backend chosen at compile time).
 
 %prep
+# Commented out to enable building RPM from local source tree
 #%setup -q
 
 %build
-./configure --prefix=/usr
+./configure @ORIG_CMDLINE_ARGS@ 
 make
 
 %install
@@ -71,6 +72,9 @@ rm -rf $RPM_BUILD_ROOT
 @DATAROOTDIR@/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service
 
 %changelog
+* Mon Jul 22 2012 Assen Totin <assen.totin@gmail.com>
+- Release 0.2.0
+
 * Thu Jul 12 2012 Assen Totin <assen.totin@gmail.com>
 - Release 0.1.0
 

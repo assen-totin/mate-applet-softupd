@@ -20,7 +20,7 @@ void aptcheck_main () {
                 close(pipefd[1]);
 
 		execlp(APTCHECK_BINARY, APTCHECK_BINARY, (char *)NULL);
-		}
+	}
 
 	// PARENT
 	else {

@@ -3,6 +3,8 @@
 
 AC_PREREQ([2.66])
 AC_INIT([softupd], [0.2.0], [assen.totin@gmail.com])
+ORIG_CMDLINE_ARGS=$@
+AC_SUBST([ORIG_CMDLINE_ARGS])
 AC_CONFIG_HEADERS([config.h])
 
 # prefix
@@ -49,6 +51,7 @@ fi
 # Check for backend tools
 FOUND_BACKEND="no"
 FORCE_BACKEND="no"
+ADDITIONAL_PACKAGES=""
 AC_ARG_ENABLE([backend],[AS_HELP_STRING([--enable-backend],[use the specified backend: package-kit, yum, yum-updatesd, apt-check (default: pick up the first available from the list)])],[FORCE_BACKEND=$enableval])
 
 ## Check for backend: packagekit
@@ -161,10 +164,12 @@ if test $SELECTED_BACKEND = "package-kit" ; then
         OBJS_BACKEND=$OBJS_BACKEND_PACKAGEKIT
         SRC_BACKEND=$SRC_BACKEND_PACKAGEKIT
         AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
+	ADDITIONAL_PACKAGES="packagekit-glib2"
 elif test $SELECTED_BACKEND = "yum-updatesd" ; then
 	OBJS_BACKEND=$OBJS_BACKEND_YUMUPDATESD
 	SRC_BACKEND=$SRC_BACKEND_YUMUPDATESD
 	AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
+	ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
 elif test $SELECTED_BACKEND = "yum" ; then
         OBJS_BACKEND=$OBJS_BACKEND_YUM
         SRC_BACKEND=$SRC_BACKEND_YUM
@@ -208,26 +213,26 @@ if test $CHECK_UPDATEMANAGER = "no" ; then
         echo "*** update-manager not found."
 else
         FOUND_INSTALLER="yes"
-        UPDATEMANAGER_INSTALLER=`which gpk-update-viewer`
+        UPDATEMANAGER_INSTALLER=`which update-manager`
 fi
 
 # Select which software installer to use
 if test $FORCE_INSTALLER = "yumex" ; then
-	if test $CHECK_YUMEXVIEWER != "no" ; then
+	if test $CHECK_YUMEXVIEWER = "yes" ; then
 		SELECTED_INSTALLER="yumex"
 	else 
                 EXIT_NOW="yes"
                 EXIT_MSG="Forced installer $FORCE_INSTALLER not found. Cannot continue."	
 	fi
 elif test $FORCE_INSTALLER = "gpk-update-viewer" ; then
-        if test $CHECK_GPKUPDATEVIEWER != "no" ; then
+        if test $CHECK_GPKUPDATEVIEWER = "yes" ; then
                 SELECTED_INSTALLER="gpk-update-viewer"
         else
                 EXIT_NOW="yes"
                 EXIT_MSG="Forced installer $FORCE_INSTALLER not found. Cannot continue." 
 	fi
 elif test $FORCE_INSTALLER = "update-manager" ; then
-        if test $CHECK_UPDATEMANAGER != "no" ; then
+        if test $CHECK_UPDATEMANAGER = "yes" ; then
                 SELECTED_INSTALLER="update-manager"
         else
                 EXIT_NOW="yes"
@@ -235,6 +240,15 @@ elif test $FORCE_INSTALLER = "update-manager" ; then
         fi
 else
 	echo "Chosing installer wisely..."
+	if test $CHECK_YUMEXVIEWER = "yes" ; then
+        	SELECTED_INSTALLER="yumex"
+	elif test $CHECK_GPKUPDATEVIEWER = "yes" ; then
+        	SELECTED_INSTALLER="gpk-update-viewer"
+	elif test $CHECK_UPDATEMANAGER != "yes" ; then
+        	SELECTED_INSTALLER="update-manager"
+	else
+		SELECTED_INSTALLER="none"
+	fi
 fi
 
 if test $EXIT_NOW = "yes" ; then
@@ -244,32 +258,23 @@ if test $EXIT_NOW = "yes" ; then
         exit
 fi
 
-if test $FOUND_INSTALLER = "no" ; then
-        echo "*** No suitable installer found. You will have to update the system manually."
-	SELECTED_INSTALLER="none"
-elif test $CHECK_YUMEXVIEWER != "no" ; then
-        SELECTED_INSTALLER="yumex"
-elif test $CHECK_GPKUPDATEVIEWER != "no" ; then
-        SELECTED_INSTALLER="gpk-update-viewer"
-elif test $CHECK_UPDATEMANAGER != "no" ; then
-	SELECTED_INSTALLER="update-manager"
-fi
-
 if test $SELECTED_INSTALLER = "yumex" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$YUMEXVIEWER_INSTALLER"],[Define where is the installer binary])
 elif test $SELECTED_INSTALLER = "gpk-update-viewer" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$GPKUPDATEVIEWER_INSTALLER"],[Define where is the installer binary])
 elif test $SELECTED_INSTALLER = "update-manager" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$UPDATEMANAGER_INSTALLER"],[Define where is the installer binary])
+else
+	echo "*** No suitable installer found. You will have to update the system manually."
 fi
+
+AC_SUBST([ADDITIONAL_PACKAGES])
 
 # Checks for libraries.
 
 # Check for packages
 PKG_CHECK_MODULES([GTK], [gtk+-2.0])
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
-PKG_CHECK_MODULES([DBUS], [dbus-1])
-PKG_CHECK_MODULES([DBUS_GLIB], [dbus-glib-1])
 PKG_CHECK_MODULES([LIBMATEPANELAPPLET], [libmatepanelapplet-3.0])
 PKG_CHECK_MODULES([LIBMATENOTIFY], [libmatenotify])
 

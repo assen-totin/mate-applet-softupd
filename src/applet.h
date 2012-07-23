@@ -1,3 +1,5 @@
+#include <glib.h>
+
 #define APPLET_FACTORY "SoftupdAppletFactory"
 #define APPLET_ID "SoftupdApplet"
 #define APPLET_NAME "softupd"

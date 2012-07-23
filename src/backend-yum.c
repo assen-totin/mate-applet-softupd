@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
-//#include <mate-panel-applet.h>
 
 #include "../config.h"
 #include "applet.h"
