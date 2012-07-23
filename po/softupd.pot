@@ -48,3 +48,13 @@ msgstr ""
 # src/main.c:73
 msgid "You have to update your system manually."
 msgstr ""
+
+# src/main.c:73
+msgid "ERROR:"
+msgstr ""
+
+# src/main.c:73
+msgid "Could not launch installer:"
+msgstr ""
+
+

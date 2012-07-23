@@ -2,6 +2,7 @@
 #include <mate-panel-applet.h>
 #include <libmatenotify/notify.h>
 #include <libintl.h>
+#include <sys/stat.h>
 
 #include "../config.h"
 #include "applet.h"
@@ -14,6 +15,7 @@ struct softupd_applet_widgets {
 
 #define _(String) gettext (String)
 
+void warn_missing_installer(GtkWidget *widget);
 
 void push_notification (gchar *title, gchar *body, gchar *icon) {
         NotifyNotification* notification;
@@ -35,11 +37,19 @@ void push_notification (gchar *title, gchar *body, gchar *icon) {
 static void quitDialogOK( GtkWidget *widget, gpointer data ){
         GtkWidget *quitDialog = data;
         gtk_widget_destroy(quitDialog);
+	struct stat buffer;
+	int status;
 
 	#ifdef INSTALLER_BINARY
-		int pid = fork();
-		if (pid == 0) {
-			execl(INSTALLER_BINARY, NULL);
+		status = stat(INSTALLER_BINARY, &buffer);
+		if (status == 0) {
+			int pid = fork();
+			if (pid == 0) {
+				execl(INSTALLER_BINARY, NULL);
+			}
+		}
+		else {
+			warn_missing_installer(widget);
 		}
 	#endif
 }
@@ -50,6 +60,23 @@ static void quitDialogCancel( GtkWidget *widget, gpointer data ){
         gtk_widget_destroy(quitDialog);
 }
 
+
+void warn_missing_installer(GtkWidget *widget) {
+        char msg1[1024];
+
+        sprintf(&msg1[0], "%s\n\n%s\n\n%s", _("ERROR:"), _("Could not launch installer:"), INSTALLER_BINARY);
+
+        GtkWidget *label = gtk_label_new (&msg1[0]);
+
+        GtkWidget *quitDialog = gtk_dialog_new_with_buttons (_("Error"), GTK_WINDOW(widget), GTK_DIALOG_MODAL, NULL);
+        GtkWidget *buttonOK = gtk_dialog_add_button (GTK_DIALOG(quitDialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
+
+        gtk_dialog_set_default_response (GTK_DIALOG (quitDialog), GTK_RESPONSE_CANCEL);
+        gtk_container_add (GTK_CONTAINER (GTK_DIALOG(quitDialog)->vbox), label);
+        g_signal_connect (G_OBJECT(buttonOK), "clicked", G_CALLBACK (quitDialogCancel), (gpointer) quitDialog);
+
+        gtk_widget_show_all (GTK_WIDGET(quitDialog));
+}
 
 static gboolean applet_on_button_press (GtkWidget *event_box, GdkEventButton *event, gpointer data) {
 	static GtkWidget *window, *box, *image, *label, *dialog;

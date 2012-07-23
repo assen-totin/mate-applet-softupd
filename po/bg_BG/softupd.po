@@ -50,3 +50,11 @@ msgstr "Имате %u чакащи пакета."
 msgid "You have to update your system manually."
 msgstr "Трябва ръчно да инсталирате пакетите."
 
+# src/main.c:73
+msgid "ERROR:"
+msgstr "ГРЕШКА:"
+
+# src/main.c:73
+msgid "Could not launch installer:"
+msgstr "Следната програма не може да бъде стартирана:"
+

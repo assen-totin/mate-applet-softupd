@@ -50,3 +50,11 @@ msgstr "You have %u updates."
 msgid "You have to update your system manually."
 msgstr "You have to update your system manually."
 
+# src/main.c:73
+msgid "ERROR:"
+msgstr "ERROR:"
+
+# src/main.c:73
+msgid "Could not launch installer:"
+msgstr "Could not launch installer:"
+

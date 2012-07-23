@@ -51,3 +51,11 @@ msgstr "Поступили новые пакеты."
 msgid "You have to update your system manually."
 msgstr "Вам надо установить обновления вручную."
 
+# src/main.c:73
+msgid "ERROR:"
+msgstr "ОШИБКА:"
+
+# src/main.c:73
+msgid "Could not launch installer:"
+msgstr "Не удалось запустить следующую программу:"
+
