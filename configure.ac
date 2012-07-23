@@ -138,7 +138,7 @@ elif test $FORCE_BACKEND = "apt-check" ; then
 		SELECTED_BACKEND=$FORCE_BACKEND
         fi
 else
-	echo "Chosing backend..."
+	echo "Chosing backend wisely..."
 	if test $OBJS_BACKEND_PACKAGEKIT != "no" ; then
 		SELECTED_BACKEND="package-kit"
 	elif test $OBJS_BACKEND_YUMUPDATESD != "no" ; then
@@ -182,7 +182,7 @@ AC_SUBST([SRC_BACKEND])
 # Check which software installer to use
 FOUND_INSTALLER="no"
 FORCE_INSTALLER="no"
-AC_ARG_ENABLE([installer],[AS_HELP_STRING([--enable-installer],[use the specified backend: yumex, gpk-update-viewer, update-manager (default: pick up the first available from the list)])],[FORCE_BACKEND=$enableval])
+AC_ARG_ENABLE([installer],[AS_HELP_STRING([--enable-installer],[use the specified backend: yumex, gpk-update-viewer, update-manager (default: pick up the first available from the list)])],[FORCE_INSTALLER=$enableval])
 
 # Check for yumex
 AC_CHECK_PROG([CHECK_YUMEXVIEWER],[yumex],[yes],[no])
@@ -212,23 +212,55 @@ else
 fi
 
 # Select which software installer to use
+if test $FORCE_INSTALLER = "yumex" ; then
+	if test $CHECK_YUMEXVIEWER != "no" ; then
+		SELECTED_INSTALLER="yumex"
+	else 
+                EXIT_NOW="yes"
+                EXIT_MSG="Forced installer $FORCE_INSTALLER not found. Cannot continue."	
+	fi
+elif test $FORCE_INSTALLER = "gpk-update-viewer" ; then
+        if test $CHECK_GPKUPDATEVIEWER != "no" ; then
+                SELECTED_INSTALLER="gpk-update-viewer"
+        else
+                EXIT_NOW="yes"
+                EXIT_MSG="Forced installer $FORCE_INSTALLER not found. Cannot continue." 
+	fi
+elif test $FORCE_INSTALLER = "update-manager" ; then
+        if test $CHECK_UPDATEMANAGER != "no" ; then
+                SELECTED_INSTALLER="update-manager"
+        else
+                EXIT_NOW="yes"
+                EXIT_MSG="Forced installer $FORCE_INSTALLER not found. Cannot continue." 
+        fi
+else
+	echo "Chosing installer wisely..."
+fi
+
+if test $EXIT_NOW = "yes" ; then
+        echo
+        echo $EXIT_MSG
+        echo
+        exit
+fi
+
 if test $FOUND_INSTALLER = "no" ; then
         echo "*** No suitable installer found. You will have to update the system manually."
 	SELECTED_INSTALLER="none"
+elif test $CHECK_YUMEXVIEWER != "no" ; then
+        SELECTED_INSTALLER="yumex"
+elif test $CHECK_GPKUPDATEVIEWER != "no" ; then
+        SELECTED_INSTALLER="gpk-update-viewer"
+elif test $CHECK_UPDATEMANAGER != "no" ; then
+	SELECTED_INSTALLER="update-manager"
+fi
 
-else
-        echo "Chosing installer..."
-
-        if test $CHECK_YUMEXVIEWER != "no" ; then
-                AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$YUMEXVIEWER_INSTALLER"],[Define where is the installer binary])
-                SELECTED_INSTALLER="yumex"
-        elif test $CHECK_GPKUPDATEVIEWER != "no" ; then
-		AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$GPKUPDATEVIEWER_INSTALLER"],[Define where is the installer binary])
-                SELECTED_INSTALLER="gpk-update-viewer"
-	elif test $CHECK_UPDATEMANAGER != "no" ; then
-		AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$UPDATEMANAGER_INSTALLER"],[Define where is the installer binary])
-		SELECTED_INSTALLER="update-manager"
-	fi
+if test $SELECTED_INSTALLER = "yumex" ; then
+        AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$YUMEXVIEWER_INSTALLER"],[Define where is the installer binary])
+elif test $SELECTED_INSTALLER = "gpk-update-viewer" ; then
+        AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$GPKUPDATEVIEWER_INSTALLER"],[Define where is the installer binary])
+elif test $SELECTED_INSTALLER = "update-manager" ; then
+        AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$UPDATEMANAGER_INSTALLER"],[Define where is the installer binary])
 fi
 
 # Checks for libraries.

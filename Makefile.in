@@ -26,6 +26,7 @@ maintainer-clean:
 	rm -f configure aclocal.m4 config.log config.status
 	rm -rf autom4te.cache
 	rm -f mate-applet-softupd.spec
+	rm -f softupd.lang
 
 rpmbuild:
 	rpmbuild -bb --define "_builddir @TOPLEVELDIR@" mate-applet-softupd.spec
