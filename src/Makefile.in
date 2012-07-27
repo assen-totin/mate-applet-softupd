@@ -37,24 +37,24 @@ maintainer-clean:
 	make distclean
 
 install:
-	test -z $(LIBEXECDIR)/mate-panel || mkdir -p $(LIBEXECDIR)/mate-panel
-	cp -f $(TARGET) $(LIBEXECDIR)/mate-panel
-	test -z $(PIXMAPDIR) || mkdir -p $(PIXMAPDIR)
-	cp -f images/applet_softupd_on.png $(PIXMAPDIR)
-	cp -f images/applet_softupd_off.png $(PIXMAPDIR)
-	test -z $(ICONSDIR)/hicolor/16x16/apps/ || mkdir -p $(ICONSDIR)/hicolor/16x16/apps/
-	cp -f images/applet_softupd.16.png $(ICONSDIR)/hicolor/16x16/apps/applet_softupd.png
-	test -z $(ICONSDIR)/hicolor/22x22/apps/ || mkdir -p $(ICONSDIR)/hicolor/22x22/apps/
-	cp -f images/applet_softupd.22.png $(ICONSDIR)/hicolor/22x22/apps/applet_softupd.png
-	test -z $(ICONSDIR)/hicolor/24x24/apps/ || mkdir -p $(ICONSDIR)/hicolor/24x24/apps/
-	cp -f images/applet_softupd.24.png $(ICONSDIR)/hicolor/24x24/apps/applet_softupd.png
-	test -z $(ICONSDIR)/hicolor/32x32/apps/ || mkdir -p $(ICONSDIR)/hicolor/32x32/apps/
-	cp -f images/applet_softupd.32.png $(ICONSDIR)/hicolor/32x32/apps/applet_softupd.png
+	test -z $(DESTDIR)$(LIBEXECDIR)/mate-panel || mkdir -p $(DESTDIR)$(LIBEXECDIR)/mate-panel
+	cp -f $(TARGET) $(DESTDIR)$(LIBEXECDIR)/mate-panel
+	test -z $(DESTDIR)$(PIXMAPDIR) || mkdir -p $(DESTDIR)$(PIXMAPDIR)
+	cp -f images/applet_softupd_on.png $(DESTDIR)$(PIXMAPDIR)
+	cp -f images/applet_softupd_off.png $(DESTDIR)$(PIXMAPDIR)
+	test -z $(DESTDIR)$(ICONSDIR)/hicolor/16x16/apps/ || mkdir -p $(DESTDIR)$(ICONSDIR)/hicolor/16x16/apps/
+	cp -f images/applet_softupd.16.png $(DESTDIR)$(ICONSDIR)/hicolor/16x16/apps/applet_softupd.png
+	test -z $(DESTDIR)$(ICONSDIR)/hicolor/22x22/apps/ || mkdir -p $(DESTDIR)$(ICONSDIR)/hicolor/22x22/apps/
+	cp -f images/applet_softupd.22.png $(DESTDIR)$(ICONSDIR)/hicolor/22x22/apps/applet_softupd.png
+	test -z $(DESTDIR)$(ICONSDIR)/hicolor/24x24/apps/ || mkdir -p $(DESTDIR)$(ICONSDIR)/hicolor/24x24/apps/
+	cp -f images/applet_softupd.24.png $(DESTDIR)$(ICONSDIR)/hicolor/24x24/apps/applet_softupd.png
+	test -z $(DESTDIR)$(ICONSDIR)/hicolor/32x32/apps/ || mkdir -p $(DESTDIR)$(ICONSDIR)/hicolor/32x32/apps/
+	cp -f images/applet_softupd.32.png $(DESTDIR)$(ICONSDIR)/hicolor/32x32/apps/applet_softupd.png
 	gtk-update-icon-cache -f -t $(ICONSDIR)/hicolor
-	test -z $(DATAROOTDIR)/mate-panel/applets/ || mkdir -p $(DATAROOTDIR)/mate-panel/applets/
-	cp -f org.mate.applets.SoftupdApplet.mate-panel-applet $(DATAROOTDIR)/mate-panel/applets/
-	test -z $(DATAROOTDIR)/dbus-1/services/ || mkdir -p $(DATAROOTDIR)/dbus-1/services/
-	cp -f org.mate.panel.applet.SoftupdApplet.service $(DATAROOTDIR)/dbus-1/services/
+	test -z $(DESTDIR)$(DATAROOTDIR)/mate-panel/applets/ || mkdir -p $(DESTDIR)$(DATAROOTDIR)/mate-panel/applets/
+	cp -f org.mate.applets.SoftupdApplet.mate-panel-applet $(DESTDIR)$(DATAROOTDIR)/mate-panel/applets/
+	test -z $(DESTDIR)$(DATAROOTDIR)/dbus-1/services/ || mkdir -p $(DESTDIR)$(DATAROOTDIR)/dbus-1/services/
+	cp -f org.mate.panel.applet.SoftupdApplet.service $(DESTDIR)$(DATAROOTDIR)/dbus-1/services/
 
 uninstall:
 	rm -f $(TARGET) $(LIBEXECDIR)/mate-panel/$(TARGET)
