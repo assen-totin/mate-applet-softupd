@@ -50,7 +50,7 @@ install:
 	cp -f images/applet_softupd.24.png $(DESTDIR)$(ICONSDIR)/hicolor/24x24/apps/applet_softupd.png
 	test -z $(DESTDIR)$(ICONSDIR)/hicolor/32x32/apps/ || mkdir -p $(DESTDIR)$(ICONSDIR)/hicolor/32x32/apps/
 	cp -f images/applet_softupd.32.png $(DESTDIR)$(ICONSDIR)/hicolor/32x32/apps/applet_softupd.png
-	gtk-update-icon-cache -f -t $(ICONSDIR)/hicolor
+	if [ "x$(DESTDIR)" = "x" ] ; then gtk-update-icon-cache -f -t $(ICONSDIR)/hicolor; else echo "DESTDIR found, skipping icon cache update"; fi
 	test -z $(DESTDIR)$(DATAROOTDIR)/mate-panel/applets/ || mkdir -p $(DESTDIR)$(DATAROOTDIR)/mate-panel/applets/
 	cp -f org.mate.applets.SoftupdApplet.mate-panel-applet $(DESTDIR)$(DATAROOTDIR)/mate-panel/applets/
 	test -z $(DESTDIR)$(DATAROOTDIR)/dbus-1/services/ || mkdir -p $(DESTDIR)$(DATAROOTDIR)/dbus-1/services/
