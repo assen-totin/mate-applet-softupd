@@ -1,3 +1,3 @@
 aclocal
-autoconf
 autoheader
+autoconf
