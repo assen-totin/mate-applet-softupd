@@ -13,8 +13,8 @@ PIXMAPDIR = @PIXMAPDIR@
 ICONSDIR = @ICONSDIR@
 DATAROOTDIR = @DATAROOTDIR@
 
-INCLUDES=`pkg-config --cflags-only-I glib-2.0 libmatepanelapplet-3.0 libmatenotify @ADDITIONAL_PACKAGES@`
-LIBS=`pkg-config --libs glib-2.0 libmatepanelapplet-3.0 libmatenotify @ADDITIONAL_PACKAGES@`
+INCLUDES=`pkg-config --cflags-only-I glib-2.0 libmatenotify @LIBMATEPANELAPPLET@ @ADDITIONAL_PACKAGES@`
+LIBS=`pkg-config --libs glib-2.0 libmatenotify @LIBMATEPANELAPPLET@ @ADDITIONAL_PACKAGES@`
 
 TARGET = softupd_applet
 
