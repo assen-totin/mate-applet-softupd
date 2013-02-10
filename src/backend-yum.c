@@ -5,7 +5,7 @@
 #include "../config.h"
 #include "applet.h"
 
-void yum_main () {
+void yum_main (softupd_applet *applet) {
 	int pipefd[2];
 	pipe(pipefd);
 
@@ -41,22 +41,22 @@ void yum_main () {
 		int exit_status = WEXITSTATUS(status);
 
 		if (exit_status == 0) 
-			glob_data.pending = 0;
+			applet->pending = 0;
 		else if (exit_status == 100)
-			glob_data.pending = line_cnt;
+			applet->pending = line_cnt;
 		else
 			// Some error have occured
-			glob_data.pending = -1;
+			applet->pending = -1;
 
-		int tmp_icon = glob_data.icon_status;
+		int tmp_icon = applet->icon_status;
 
-		if (glob_data.pending != 0)
-			glob_data.icon_status = 1;
+		if (applet->pending != 0)
+			applet->icon_status = 1;
 		else
-			glob_data.icon_status = 0;
+			applet->icon_status = 0;
 
-	        if (tmp_icon != glob_data.icon_status)
-        	        glob_data.flip_icon = 1;
+	        if (tmp_icon != applet->icon_status)
+        	        applet->flip_icon = 1;
 
 	}
 }

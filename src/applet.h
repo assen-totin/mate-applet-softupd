@@ -1,3 +1,8 @@
+#include <unistd.h>
+#include <mate-panel-applet.h>
+#include <libmatenotify/notify.h>
+#include <libintl.h>
+#include <sys/stat.h>
 #include <glib.h>
 
 #define APPLET_FACTORY "SoftupdAppletFactory"
@@ -9,13 +14,15 @@
 // Time between backend runs - for yum, apt-check, apt-get; in milliseconds
 #define REFRESH_TIME 600000
 
-struct softupd_applet_data {
+typedef struct {
+	GMainLoop *loop;
+	MatePanelApplet *applet;
+        GtkWidget *image;
+        GtkWidget *event_box;
 	int pending;
 	int icon_status;
 	int flip_icon;
-};
-
-struct softupd_applet_data glob_data;
+} softupd_applet;
 
 // Prototypes
 gboolean packagekit_main();

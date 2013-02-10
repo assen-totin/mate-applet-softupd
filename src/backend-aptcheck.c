@@ -6,7 +6,7 @@
 #include "../config.h"
 #include "applet.h"
 
-void aptcheck_main () {
+void aptcheck_main (softupd_applet *applet) {
 	int pipefd[2];
 	pipe(pipefd);
 
@@ -35,17 +35,17 @@ void aptcheck_main () {
 
 		waitpid(pid, &status, 0);
 
-		glob_data.pending = atoi(res_p);
+		applet->pending = atoi(res_p);
 
-		int tmp_icon = glob_data.icon_status;
+		int tmp_icon = applet->icon_status;
 
-		if (glob_data.pending != 0)
-			glob_data.icon_status = 1;
+		if (applet->data.pending != 0)
+			applet->icon_status = 1;
 		else
-			glob_data.icon_status = 0;
+			aplet->icon_status = 0;
 
-	        if (tmp_icon != glob_data.icon_status)
-                        glob_data.flip_icon = 1;
+	        if (tmp_icon != applet->icon_status)
+                        applet->flip_icon = 1;
 
 	}
 }

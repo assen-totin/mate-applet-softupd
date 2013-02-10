@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 
-void callback_ready(GObject *source_object, GAsyncResult *res, gpointer user_data) {
+void callback_ready(GObject *source_object, GAsyncResult *res, softupd_applet *applet) {
 	PkClient *client = PK_CLIENT(source_object);
 	GError *error = NULL;
 	PkResults *results = NULL;
@@ -19,38 +19,38 @@ void callback_ready(GObject *source_object, GAsyncResult *res, gpointer user_dat
 	list = pk_results_get_package_array(results);
 
 	if (list != NULL) {
-		glob_data.pending = list->len;
+		applet->pending = list->len;
 		g_ptr_array_unref(list);
 	}
 	// DO nothing on ELSE - if results are NULL, it usually means timeout. 
 	//else
 	//	glob_data.pending = 0;
 
-	int tmp_icon = glob_data.icon_status;
+	int tmp_icon = applet->icon_status;
 
-	if (glob_data.pending != 0)
-		glob_data.icon_status = 1;
+	if (applet->pending != 0)
+		applet->icon_status = 1;
 	else
-		glob_data.icon_status = 0;
+		applet->icon_status = 0;
 
-	if (tmp_icon != glob_data.icon_status)
-		glob_data.flip_icon = 1;
+	if (tmp_icon != applet->icon_status)
+		applet->flip_icon = 1;
 
 	if (results != NULL) {
 		g_object_unref(results);
 	}
 }
 
-gboolean plugin_loop(gpointer user_data) {
+gboolean plugin_loop(softupd_applet *applet) {
 	GError *error = NULL;
         PkClient *client = pk_client_new();
 
-        pk_client_get_updates_async(client, pk_bitfield_value(PK_FILTER_ENUM_NONE), NULL, NULL, NULL, (GAsyncReadyCallback) callback_ready, NULL);
+        pk_client_get_updates_async(client, pk_bitfield_value(PK_FILTER_ENUM_NONE), NULL, NULL, NULL, (GAsyncReadyCallback) callback_ready, (gpointer)applet);
 
         return TRUE;
 }
 
-gboolean packagekit_main() {
+gboolean packagekit_main(softupd_applet *applet) {
 	GDBusProxy *proxy = NULL;
 	GError *error = NULL;
 	GVariant *retval = NULL;
@@ -60,7 +60,7 @@ gboolean packagekit_main() {
 
 	loop = g_main_loop_new(NULL, FALSE);
 
-	g_timeout_add(REFRESH_TIME, plugin_loop, NULL);
+	g_timeout_add(REFRESH_TIME, (GSourceFunc)plugin_loop, (gpointer)applet);
 
 	g_main_loop_run(loop);
 
