@@ -53,56 +53,38 @@ AC_ARG_ENABLE([backend],[AS_HELP_STRING([--enable-backend],[use the specified ba
 
 ## Check for backend: packagekit
 AC_CHECK_PROG([CHECK_PACKAGEKIT],[pkcon],[yes],[no])
-OBJS_BACKEND_PACKAGEKIT="no"
-SRC_BACKEND_PACKAGEKIT="no"
 if test $CHECK_PACKAGEKIT = "no" ; then
         echo "*** package-kit not found."
 else
         FOUND_BACKEND="yes"
-        OBJS_BACKEND_PACKAGEKIT=backend-packagekit.o
-        SRC_BACKEND_PACKAGEKIT=backend-packagekit.c
 fi
 
 ## Check for backend: yum-updatesd
 AC_CHECK_PROG([CHECK_YUMUPDATESD],[yum-updatesd],[yes],[no])
-OBJS_BACKEND_YUMUPDATESD="no"
-SRC_BACKEND_YUMUPDATESD="no"
 if test $CHECK_YUMUPDATESD = "no" ; then
 	echo "*** yum-updatesd not found."
 else
 	FOUND_BACKEND="yes"
-	OBJS_BACKEND_YUMUPDATESD=backend-yumupdatesd.o
-	SRC_BACKEND_YUMUPDATESD=backend-yumupdatesd.c
 fi
 
 ## Check for backend: yum
 AC_CHECK_PROG([CHECK_YUM],[yum],[yes],[no])
-OBJS_BACKEND_YUM="no"
-SRC_BACKEND_YUM="no"
 if test $CHECK_YUM = "no" ; then
         echo "*** yum not found."
 else
         FOUND_BACKEND="yes"
         YUM_VIEWER=`which yum`
-        OBJS_BACKEND_YUM=backend-yum.o
-        SRC_BACKEND_YUM=backend-yum.c
 fi
 
 ## Check for backend: apt-check
 AC_PATH_PROG([APTCHECK_PROG],[apt-check],[no],[/usr/lib/update-notifier:/var/lib/update-notifier:/usr/lib64/update-notifier:/var/lib64/update-notifier])
-OBJS_BACKEND_APTCHECK="no"
-SRC_BACKEND_APTCHECK="no"
 if test $APTCHECK_PROG = "no" ; then
 	echo "*** apt-check not found."
 else
 	FOUND_BACKEND="yes"
-	OBJS_BACKEND_APTCHECK=backend-aptcheck.o
-	SRC_BACKEND_APTCHECK=backend-aptcheck.c
 fi
 
 ## Select which backend to use
-OBJS_BACKEND="none"
-SRC_BACKEND="none"
 SELECTED_BACKEND="none"
 EXIT_NOW="no"
 EXIT_MSG="none"
@@ -110,28 +92,28 @@ if test $FOUND_BACKEND = "no" ; then
 	EXIT_NOW="yes"
 	EXIT_MSG = "*** No suitable backend found. Cannot continue."
 elif test $FORCE_BACKEND = "package-kit" ; then
-	if test $OBJS_BACKEND_PACKAGEKIT = "no" ; then
+	if test $CHECK_PACKAGEKIT = "no" ; then
 		EXIT_NOW="yes"
 		EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
 	fi
 elif test $FORCE_BACKEND = "yum-updatesd" ; then
-        if test $OBJS_BACKEND_YUMUPDATESD = "no" ; then
+        if test $CHECK_YUMUPDATESD = "no" ; then
                 EXIT_NOW="yes"
                 EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
         fi
 elif test $FORCE_BACKEND = "yum" ; then
-        if test $OBJS_BACKEND_YUM = "no" ; then
+        if test $CHECK_YUM = "no" ; then
                 EXIT_NOW="yes"
                 EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
         fi
 elif test $FORCE_BACKEND = "apt-check" ; then
-        if test $OBJS_BACKEND_APTCHECK = "no" ; then
+        if test $CHECK_APTCHECK = "no" ; then
                 EXIT_NOW="yes"
                 EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
@@ -139,13 +121,13 @@ elif test $FORCE_BACKEND = "apt-check" ; then
         fi
 else
 	echo "Chosing backend wisely..."
-	if test $OBJS_BACKEND_PACKAGEKIT != "no" ; then
+	if test $CHECK_PACKAGEKIT != "no" ; then
 		SELECTED_BACKEND="package-kit"
-	elif test $OBJS_BACKEND_YUMUPDATESD != "no" ; then
+	elif test $CHECK_YUMUPDATESD != "no" ; then
 		SELECTED_BACKEND="yum-updatesd"
-	elif test $OBJS_BACKEND_YUM != "no" ; then
+	elif test $CHECK_YUM != "no" ; then
 		SELECTED_BACKEND="yum"
-	elif test $OBJS_BACKEND_APTCHECK != "no" ; then
+	elif test $CHECK_APTCHECK != "no" ; then
 		SELECTED_BACKEND="apt-check"
 	fi
 fi
@@ -158,28 +140,22 @@ if test $EXIT_NOW = "yes" ; then
 fi
 
 if test $SELECTED_BACKEND = "package-kit" ; then
-        OBJS_BACKEND=$OBJS_BACKEND_PACKAGEKIT
-        SRC_BACKEND=$SRC_BACKEND_PACKAGEKIT
         AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
 	ADDITIONAL_PACKAGES="packagekit-glib2"
+	AM_CONDITIONAL([WITH_PACKAGEKIT])
 elif test $SELECTED_BACKEND = "yum-updatesd" ; then
-	OBJS_BACKEND=$OBJS_BACKEND_YUMUPDATESD
-	SRC_BACKEND=$SRC_BACKEND_YUMUPDATESD
 	AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
 	ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
+	AM_CONDITIONAL([WITH_YUMUPDATESD])
 elif test $SELECTED_BACKEND = "yum" ; then
-        OBJS_BACKEND=$OBJS_BACKEND_YUM
-        SRC_BACKEND=$SRC_BACKEND_YUM
         AC_DEFINE([HAVE_YUM],[1],[Define if yum was found])
         AC_DEFINE_UNQUOTED([YUM_BINARY],["$YUM_VIEWER"],[Define where is the yum binary])
+	AM_CONDITIONAL([WITH_YUM])
 elif test $SELECTED_BACKEND = "apt-check" ; then
-	OBJS_BACKEND=$OBJS_BACKEND_APTCHECK
-	SRC_BACKEND=$SRC_BACKEND_APTCHECK
 	AC_DEFINE([HAVE_APTCHECK],[1],[Define if apt-check was found])
 	AC_DEFINE_UNQUOTED([APTCHECK_BINARY],["$APTCHECK_PROG"],[Define where is the apt-check binary])
+	AM_CONDITIONAL([WITH_APTCHECK])
 fi
-AC_SUBST([OBJS_BACKEND])
-AC_SUBST([SRC_BACKEND])
 
 # Check which software installer to use
 FOUND_INSTALLER="no"
