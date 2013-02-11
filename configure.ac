@@ -1,11 +1,8 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
-
 AC_PREREQ([2.66])
-AC_INIT([softupd], [0.2.4], [assen.totin@gmail.com])
-ORIG_CMDLINE_ARGS=$@
-AC_SUBST([ORIG_CMDLINE_ARGS])
+AC_INIT([mate-applet-softupd], [0.2.5], [assen.totin@gmail.com])
 AC_CONFIG_HEADERS([config.h])
+
+AM_INIT_AUTOMAKE([-Wall])
 
 # prefix
 if test "x$prefix" = "xNONE" ; then

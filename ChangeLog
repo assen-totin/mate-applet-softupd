@@ -1,3 +1,8 @@
+Feb 10, 2013 - Version 0.2.5
+===========================
+* Updated to automake
+* Fixed applet background transparecny
+
 Jan 28, 2013 - Version 0.2.4
 ============================
 * Updated for Fedora 18 (libmatepanelapplet-4).

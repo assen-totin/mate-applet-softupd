@@ -18,27 +18,14 @@ Supports YUM and APT (backend chosen at compile time).
 #%setup -q
 
 %build
-./configure @ORIG_CMDLINE_ARGS@ 
-make
+#./configure @ORIG_CMDLINE_ARGS@ 
+#make
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT@LIBEXECDIR@/mate-panel
-mkdir -p $RPM_BUILD_ROOT@PIXMAPDIR@
-mkdir -p $RPM_BUILD_ROOT@ICONSDIR@/hicolor/16x16/apps
-mkdir -p $RPM_BUILD_ROOT@ICONSDIR@/hicolor/22x22/apps
-mkdir -p $RPM_BUILD_ROOT@ICONSDIR@/hicolor/24x24/apps
-mkdir -p $RPM_BUILD_ROOT@ICONSDIR@/hicolor/32x32/apps
-mkdir -p $RPM_BUILD_ROOT@DATAROOTDIR@/mate-panel/applets
-mkdir -p $RPM_BUILD_ROOT@DATAROOTDIR@/dbus-1/services
-
-for DIR in `find po/ -maxdepth 1 -mindepth 1 -type d | sed s/po.//g`; do
-	mkdir -p $RPM_BUILD_ROOT@LOCALEDIR@/$DIR/LC_MESSAGES
-done
-
 make install DESTDIR=$RPM_BUILD_ROOT
 
-%find_lang softupd
+%find_lang mate-applet-softupd
 
 %post
 gtk-update-icon-cache -f -t @ICONSDIR@/hicolor
@@ -46,11 +33,18 @@ gtk-update-icon-cache -f -t @ICONSDIR@/hicolor
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files -f softupd.lang
+%files -f mate-applet-softupd.lang
 %defattr(-,root,root)
-%doc README TODO LICENSE CHANGES AUTHOR BUGS
+%doc @DATAROOTDIR@/doc/%{name}/AUTHORS
+%doc @DATAROOTDIR@/doc/%{name}/BUGS
+%doc @DATAROOTDIR@/doc/%{name}/COPYING
+%doc @DATAROOTDIR@/doc/%{name}/ChangeLog
+%doc @DATAROOTDIR@/doc/%{name}/INSTALL
+%doc @DATAROOTDIR@/doc/%{name}/NEWS
+%doc @DATAROOTDIR@/doc/%{name}/README
+%doc @DATAROOTDIR@/doc/%{name}/TODO
 
-@LIBEXECDIR@/mate-panel/softupd_applet
+@LIBEXECDIR@/softupd_applet
 @PIXMAPDIR@/applet_softupd_on.png
 @PIXMAPDIR@/applet_softupd_off.png
 @ICONSDIR@/hicolor/16x16/apps/applet_softupd.png
@@ -61,6 +55,9 @@ rm -rf $RPM_BUILD_ROOT
 @DATAROOTDIR@/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service
 
 %changelog
+* Sun Feb 10 2013 Assen Totin <assen.totin@gmail.com>
+- Release 0.2.5
+
 * Sun Dec 2 2012 Assen Totin <assen.totin@gmail.com>
 - Release 0.2.3
 
