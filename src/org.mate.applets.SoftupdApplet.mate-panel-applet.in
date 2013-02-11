@@ -1,6 +1,6 @@
 [Applet Factory]
 Id=SoftupdAppletFactory
-Location=@LIBEXECDIR@/mate-panel/softupd_applet
+Location=@LIBEXECDIR@/softupd_applet
 Name=Software Updates
 Name[en_GB]=Software Updates
 Name[bg_BG]=Нови пакети

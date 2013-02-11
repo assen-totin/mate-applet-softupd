@@ -268,8 +268,6 @@ else
 	echo "*** No suitable installer found. You will have to update the system manually."
 fi
 
-AC_SUBST([ADDITIONAL_PACKAGES])
-
 # Checks for libraries.
 
 # Check for packages
@@ -286,7 +284,11 @@ elif test $FOUND_LMPA_3 = "yes" ; then
 else
 	AC_MSG_ERROR(["*** libmatepanelapplet not found."])
 fi
-AC_SUBST([LIBMATEPANELAPPLET])
+
+APPLET_FLAGS=`$PKG_CONFIG --cflags-only-I glib-2.0 libmatenotify $LIBMATEPANELAPPLET $ADDITIONAL_PACKAGES`
+APPLET_LIBS=`$PKG_CONFIG --libs glib-2.0 libmatenotify $LIBMATEPANELAPPLET $ADDITIONAL_PACKAGES`
+AC_SUBST([APPLET_FLAGS])
+AC_SUBST([APPLET_LIBS])
 
 # Makefiles
 AC_CONFIG_FILES([Makefile src/Makefile po/Makefile])
