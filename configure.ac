@@ -31,6 +31,15 @@ AC_DEFINE_UNQUOTED([LOCALEDIR],["$LOCALEDIR"],[Locale files])
 TOPLEVELDIR=`pwd`
 AC_SUBST([TOPLEVELDIR])
 
+# gettext
+AM_GNU_GETTEXT_VERSION(0.18.1)
+AM_GNU_GETTEXT([external])
+if test $USE_NLS != "yes" ; then
+        echo "*** gettext not found. You're losing internationalization."
+fi
+AC_DEFINE([GETTEXT_PACKAGE], ["gtk20"], ["GTK gettext"])
+AC_DEFINE_UNQUOTED([MATELOCALEDIR], ["$LOCALEDIR"], ["Loale Dir MATE"])
+
 # Checks for programs
 AC_PROG_CC
 MAKEFILE_CC=`which gcc`
@@ -113,7 +122,7 @@ elif test $FORCE_BACKEND = "yum" ; then
 		SELECTED_BACKEND=$FORCE_BACKEND
         fi
 elif test $FORCE_BACKEND = "apt-check" ; then
-        if test $CHECK_APTCHECK = "no" ; then
+        if test $APTCHECK_PROG = "no" ; then
                 EXIT_NOW="yes"
                 EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
@@ -123,38 +132,33 @@ else
 	echo "Chosing backend wisely..."
 	if test $CHECK_PACKAGEKIT != "no" ; then
 		SELECTED_BACKEND="package-kit"
+		AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
+		ADDITIONAL_PACKAGES="packagekit-glib2"
 	elif test $CHECK_YUMUPDATESD != "no" ; then
 		SELECTED_BACKEND="yum-updatesd"
+	        AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
+	        ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
 	elif test $CHECK_YUM != "no" ; then
 		SELECTED_BACKEND="yum"
-	elif test $CHECK_APTCHECK != "no" ; then
+	        AC_DEFINE([HAVE_YUM],[1],[Define if yum was found])
+        	AC_DEFINE_UNQUOTED([YUM_BINARY],["$YUM_VIEWER"],[Define where is the yum binary])
+	elif test $APTCHECK_PROG != "no" ; then
 		SELECTED_BACKEND="apt-check"
+	        AC_DEFINE([HAVE_APTCHECK],[1],[Define if apt-check was found])
+        	AC_DEFINE_UNQUOTED([APTCHECK_BINARY],["$APTCHECK_PROG"],[Define where is the apt-check binary])
 	fi
 fi
+
+AM_CONDITIONAL([WITH_PACKAGEKIT], [test $SELECTED_BACKEND = "package-kit"])
+AM_CONDITIONAL([WITH_YUMUPDATESD], [test $SELECTED_BACKEND = "yum-updatesd"])
+AM_CONDITIONAL([WITH_YUM], [test $SELECTED_BACKEND = "yum"])
+AM_CONDITIONAL([WITH_APTCHECK], [test $SELECTED_BACKEND = "apt-check"])
 
 if test $EXIT_NOW = "yes" ; then
 	echo
 	echo $EXIT_MSG
 	echo
 	exit
-fi
-
-if test $SELECTED_BACKEND = "package-kit" ; then
-        AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
-	ADDITIONAL_PACKAGES="packagekit-glib2"
-	AM_CONDITIONAL([WITH_PACKAGEKIT])
-elif test $SELECTED_BACKEND = "yum-updatesd" ; then
-	AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
-	ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
-	AM_CONDITIONAL([WITH_YUMUPDATESD])
-elif test $SELECTED_BACKEND = "yum" ; then
-        AC_DEFINE([HAVE_YUM],[1],[Define if yum was found])
-        AC_DEFINE_UNQUOTED([YUM_BINARY],["$YUM_VIEWER"],[Define where is the yum binary])
-	AM_CONDITIONAL([WITH_YUM])
-elif test $SELECTED_BACKEND = "apt-check" ; then
-	AC_DEFINE([HAVE_APTCHECK],[1],[Define if apt-check was found])
-	AC_DEFINE_UNQUOTED([APTCHECK_BINARY],["$APTCHECK_PROG"],[Define where is the apt-check binary])
-	AM_CONDITIONAL([WITH_APTCHECK])
 fi
 
 # Check which software installer to use
@@ -264,7 +268,7 @@ AC_SUBST([APPLET_FLAGS])
 AC_SUBST([APPLET_LIBS])
 
 # Makefiles
-AC_CONFIG_FILES([Makefile src/Makefile po/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in po/Makefile images/Makefile])
 
 # Service files
 AC_CONFIG_FILES([src/org.mate.applets.SoftupdApplet.mate-panel-applet src/org.mate.panel.applet.SoftupdApplet.service mate-applet-softupd.spec])

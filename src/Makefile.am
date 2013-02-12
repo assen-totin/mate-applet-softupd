@@ -10,7 +10,7 @@ APPLET_LIBS=@APPLET_LIBS@
 AM_CPPFLAGS = @GTK_CFLAGS@ @APPLET_FLAGS@
 LDADD = @GTK_LIBS@ @APPLET_LIBS@
 
-libexec_PROGRAM = softupd_applet
+libexec_PROGRAMS = softupd_applet
 
 softupd_applet_SOURCES = applet.h main.c 
 
