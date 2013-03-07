@@ -62,7 +62,6 @@ void callback_ready(GObject *source_object, GAsyncResult *res, softupd_applet *a
 }
 
 gboolean plugin_loop(softupd_applet *applet) {
-	GError *error = NULL;
         PkClient *client = pk_client_new();
 
         pk_client_get_updates_async(client, pk_bitfield_value(PK_FILTER_ENUM_NONE), NULL, NULL, NULL, (GAsyncReadyCallback) callback_ready, (gpointer)applet);
@@ -71,9 +70,6 @@ gboolean plugin_loop(softupd_applet *applet) {
 }
 
 gboolean packagekit_main(softupd_applet *applet) {
-	GDBusProxy *proxy = NULL;
-	GError *error = NULL;
-	GVariant *retval = NULL;
 	GMainLoop *loop;
 	
 	g_type_init();

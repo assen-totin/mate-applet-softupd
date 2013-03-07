@@ -53,7 +53,7 @@ static void quitDialogOK( GtkWidget *widget, gpointer data ){
 		if (status == 0) {
 			int pid = fork();
 			if (pid == 0) {
-				execl(INSTALLER_BINARY, NULL);
+				execl(INSTALLER_BINARY, INSTALLER_BINARY, NULL);
 			}
 		}
 		else {
@@ -87,12 +87,12 @@ void warn_missing_installer(GtkWidget *widget) {
 }
 
 static gboolean applet_on_button_press (GtkWidget *event_box, GdkEventButton *event, softupd_applet *applet) {
-	static GtkWidget *window, *box, *image, *label, *dialog;
+	static GtkWidget *label;
 
 	if (event->button != 1)
 		return FALSE;
 
-	char msg1[1024], msg2[1024];
+	char msg1[1024];
 	sprintf(&msg1[0], _("Pending updates: %u"), applet->pending);
 	if (applet->pending > 0) {
 		#ifdef INSTALLER_BINARY
@@ -158,6 +158,7 @@ static gboolean applet_listener(softupd_applet *applet) {
 	GMainLoop *loop;
 
 	#ifdef HAVE_PACKAGEKIT
+		(void) loop;    // "Use" it.
 		if(packagekit_main(applet))
 			return TRUE;
 		else

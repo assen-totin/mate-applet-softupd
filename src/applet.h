@@ -18,6 +18,7 @@
  *  
  */
 
+#include <string.h>
 #include <unistd.h>
 #include <mate-panel-applet.h>
 #include <libmatenotify/notify.h>
