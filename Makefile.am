@@ -10,6 +10,8 @@ SUBDIRS = src images po
 
 dist_doc_DATA = AUTHORS BUGS ChangeLog COPYING INSTALL NEWS README TODO
 
+EXTRA_DIST = mate-applet-softupd.spec
+
 rpm:
 	rpmbuild -bb --define "_builddir @TOPLEVELDIR@" mate-applet-softupd.spec
 

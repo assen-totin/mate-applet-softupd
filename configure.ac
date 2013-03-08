@@ -97,15 +97,19 @@ fi
 SELECTED_BACKEND="none"
 EXIT_NOW="no"
 EXIT_MSG="none"
+RPM_REQUIRES_BACKEND=""
+RPM_BUILREQUIRES_BACKEND=""
 if test $FOUND_BACKEND = "no" ; then
 	EXIT_NOW="yes"
-	EXIT_MSG = "*** No suitable backend found. Cannot continue."
+	EXIT_MSG="*** No suitable backend found. Cannot continue."
 elif test $FORCE_BACKEND = "package-kit" ; then
 	if test $CHECK_PACKAGEKIT = "no" ; then
 		EXIT_NOW="yes"
 		EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
+                RPM_REQUIRES_BACKEND="Requires: PackageKit"
+                RPM_BUILREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
 	fi
 elif test $FORCE_BACKEND = "yum-updatesd" ; then
         if test $CHECK_YUMUPDATESD = "no" ; then
@@ -113,6 +117,7 @@ elif test $FORCE_BACKEND = "yum-updatesd" ; then
                 EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
+		RPM_REQUIRES_BACKEND="Requires: yum-updatesd"
         fi
 elif test $FORCE_BACKEND = "yum" ; then
         if test $CHECK_YUM = "no" ; then
@@ -120,6 +125,7 @@ elif test $FORCE_BACKEND = "yum" ; then
                 EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
+		RPM_REQUIRES_BACKEND="Requires: yum"
         fi
 elif test $FORCE_BACKEND = "apt-check" ; then
         if test $APTCHECK_PROG = "no" ; then
@@ -134,14 +140,18 @@ else
 		SELECTED_BACKEND="package-kit"
 		AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
 		ADDITIONAL_PACKAGES="packagekit-glib2"
+		RPM_REQUIRES_BACKEND="Requires: PackageKit"
+		RPM_BUILREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
 	elif test $CHECK_YUMUPDATESD != "no" ; then
 		SELECTED_BACKEND="yum-updatesd"
 	        AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
 	        ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
+		RPM_REQUIRES_BACKEND="Requires: yum-updatesd"
 	elif test $CHECK_YUM != "no" ; then
 		SELECTED_BACKEND="yum"
 	        AC_DEFINE([HAVE_YUM],[1],[Define if yum was found])
         	AC_DEFINE_UNQUOTED([YUM_BINARY],["$YUM_VIEWER"],[Define where is the yum binary])
+		RPM_REQUIRES_BACKEND="Requires: yum"
 	elif test $APTCHECK_PROG != "no" ; then
 		SELECTED_BACKEND="apt-check"
 	        AC_DEFINE([HAVE_APTCHECK],[1],[Define if apt-check was found])
@@ -153,6 +163,8 @@ AM_CONDITIONAL([WITH_PACKAGEKIT], [test $SELECTED_BACKEND = "package-kit"])
 AM_CONDITIONAL([WITH_YUMUPDATESD], [test $SELECTED_BACKEND = "yum-updatesd"])
 AM_CONDITIONAL([WITH_YUM], [test $SELECTED_BACKEND = "yum"])
 AM_CONDITIONAL([WITH_APTCHECK], [test $SELECTED_BACKEND = "apt-check"])
+AC_SUBST([RPM_REQUIRES_BACKEND])
+AC_SUBST([RPM_BUILREQUIRES_BACKEND])
 
 if test $EXIT_NOW = "yes" ; then
 	echo
@@ -235,15 +247,22 @@ if test $EXIT_NOW = "yes" ; then
         exit
 fi
 
+RPM_REQUIRES_INSTALLER=""
+RPM_BUILDREQUIRES_INSTALLER=""
 if test $SELECTED_INSTALLER = "yumex" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$YUMEXVIEWER_INSTALLER"],[Define where is the installer binary])
+	RPM_REQUIRES_INSTALLER="Requires: yumex"
+	RPM_BUILDREQUIRES_INSTALLER="BuildRequires:yumex"
 elif test $SELECTED_INSTALLER = "gpk-update-viewer" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$GPKUPDATEVIEWER_INSTALLER"],[Define where is the installer binary])
+	RPM_REQUIRES_INSTALLER="Requires: gnome-packagekit"
 elif test $SELECTED_INSTALLER = "update-manager" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$UPDATEMANAGER_INSTALLER"],[Define where is the installer binary])
 else
 	echo "*** No suitable installer found. You will have to update the system manually."
 fi
+AC_SUBST([RPM_REQUIRES_INSTALLER])
+AC_SUBST([RPM_BUILDREQUIRES_INSTALLER])
 
 # Checks for libraries.
 
