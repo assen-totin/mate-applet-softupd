@@ -21,10 +21,15 @@
 #include <string.h>
 #include <unistd.h>
 #include <mate-panel-applet.h>
-#include <libmatenotify/notify.h>
 #include <libintl.h>
 #include <sys/stat.h>
 #include <glib.h>
+
+#ifdef HAVE_LIBMATENOTIFY
+	#include <libmatenotify/notify.h>
+#elif HAVE_LIBNOTIFY
+	#include <libnotify/notify.h>
+#endif
 
 #define APPLET_FACTORY "SoftupdAppletFactory"
 #define APPLET_ID "SoftupdApplet"

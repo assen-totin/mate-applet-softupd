@@ -30,7 +30,12 @@ void push_notification (gchar *title, gchar *body, gchar *icon) {
 	GError* error = NULL;
 
 	notify_init(PACKAGE_NAME);
+
+#ifdef HAVE_LIBMATENOTIFY
         notification = notify_notification_new (title, body, icon, NULL);
+#elif HAVE_LIBNOTIFY
+	notification = notify_notification_new (title, body, icon);
+#endif
 
         notify_notification_set_timeout (notification, 5000);
 

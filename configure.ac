@@ -38,7 +38,7 @@ if test $USE_NLS != "yes" ; then
         echo "*** gettext not found. You're losing internationalization."
 fi
 AC_DEFINE([GETTEXT_PACKAGE], ["gtk20"], ["GTK gettext"])
-AC_DEFINE_UNQUOTED([MATELOCALEDIR], ["$LOCALEDIR"], ["Loale Dir MATE"])
+AC_DEFINE_UNQUOTED([MATELOCALEDIR], ["$LOCALEDIR"], ["Locale Dir MATE"])
 
 # Checks for programs
 AC_PROG_CC
@@ -98,7 +98,7 @@ SELECTED_BACKEND="none"
 EXIT_NOW="no"
 EXIT_MSG="none"
 RPM_REQUIRES_BACKEND=""
-RPM_BUILREQUIRES_BACKEND=""
+RPM_BUILDREQUIRES_BACKEND=""
 if test $FOUND_BACKEND = "no" ; then
 	EXIT_NOW="yes"
 	EXIT_MSG="*** No suitable backend found. Cannot continue."
@@ -109,7 +109,7 @@ elif test $FORCE_BACKEND = "package-kit" ; then
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
                 RPM_REQUIRES_BACKEND="Requires: PackageKit"
-                RPM_BUILREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
+                RPM_BUILDREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
 	fi
 elif test $FORCE_BACKEND = "yum-updatesd" ; then
         if test $CHECK_YUMUPDATESD = "no" ; then
@@ -141,7 +141,7 @@ else
 		AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
 		ADDITIONAL_PACKAGES="packagekit-glib2"
 		RPM_REQUIRES_BACKEND="Requires: PackageKit"
-		RPM_BUILREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
+		RPM_BUILDREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
 	elif test $CHECK_YUMUPDATESD != "no" ; then
 		SELECTED_BACKEND="yum-updatesd"
 	        AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
@@ -164,14 +164,7 @@ AM_CONDITIONAL([WITH_YUMUPDATESD], [test $SELECTED_BACKEND = "yum-updatesd"])
 AM_CONDITIONAL([WITH_YUM], [test $SELECTED_BACKEND = "yum"])
 AM_CONDITIONAL([WITH_APTCHECK], [test $SELECTED_BACKEND = "apt-check"])
 AC_SUBST([RPM_REQUIRES_BACKEND])
-AC_SUBST([RPM_BUILREQUIRES_BACKEND])
-
-if test $EXIT_NOW = "yes" ; then
-	echo
-	echo $EXIT_MSG
-	echo
-	exit
-fi
+AC_SUBST([RPM_BUILDREQUIRES_BACKEND])
 
 # Check which software installer to use
 FOUND_INSTALLER="no"
@@ -240,13 +233,6 @@ else
 	fi
 fi
 
-if test $EXIT_NOW = "yes" ; then
-        echo
-        echo $EXIT_MSG
-        echo
-        exit
-fi
-
 RPM_REQUIRES_INSTALLER=""
 RPM_BUILDREQUIRES_INSTALLER=""
 if test $SELECTED_INSTALLER = "yumex" ; then
@@ -264,13 +250,66 @@ fi
 AC_SUBST([RPM_REQUIRES_INSTALLER])
 AC_SUBST([RPM_BUILDREQUIRES_INSTALLER])
 
+# libmatenotify or libnotify?
+RPM_BUILDREQUIRES_NOTIFY=""
+RPM_REQUIRES_NOTIFY=""
+FORCE_NOTIFY="no"
+AC_ARG_ENABLE([notify],[AS_HELP_STRING([--enable-notify],[use the specified notificatin library: libnotify, libmatenotify (default: pick up the first available from the list)])],[FORCE_NOTIFY=$enableval])
+PKG_CHECK_MODULES([LIBMATENOTIFY], [libmatenotify], [FOUND_LMN="yes"], [FOUND_LMN="no"])
+PKG_CHECK_MODULES([LIBNOTIFY], [libnotify], [FOUND_LN="yes"], [FOUND_LN="no"])
+if test $FORCE_NOTIFY = "libmatenotify" ; then
+        if test $FOUND_LMN = "yes" ; then
+                SELECTED_NOTIFY="libmatenotify"
+		AC_DEFINE([HAVE_LIBMATENOTIFY],[1],[Define if libmatenotify was found])
+		RPM_BUILDREQUIRES_NOTIFY="BuildRequires: libmatenotify-devel >= 1.2.0"
+		RPM_REQUIRES_NOTIFY="Requires: libmatenotify >= 1.2.0"
+        else
+                EXIT_NOW="yes"
+                EXIT_MSG="Forced notification library $FORCE_NOTIFY not found. Cannot continue."
+        fi
+elif test $FORCE_NOTIFY = "libnotify" ; then
+        if test $FOUND_LN = "yes" ; then
+                SELECTED_NOTIFY="libnotify"
+		AC_DEFINE([HAVE_LIBNOTIFY],[1],[Define if libnotify was found])
+                RPM_BUILDREQUIRES_NOTIFY="BuildRequires: libnotify-devel >= 0.7.0"
+                RPM_REQUIRES_NOTIFY="Requires: libnotify >= 0.7.0"
+        else
+                EXIT_NOW="yes"
+                EXIT_MSG="Forced notification library $FORCE_NOTIFY not found. Cannot continue."
+        fi
+else
+	if test $FOUND_LN = "yes" ; then
+                SELECTED_NOTIFY="libnotify"
+		AC_DEFINE([HAVE_LIBNOTIFY],[1],[Define if libnotify was found])	
+                RPM_BUILDREQUIRES_NOTIFY="BuildRequires: libnotify-devel >= 0.7.0"
+                RPM_REQUIRES_NOTIFY="Requires: libnotify >= 0.7.0"
+	elif test $FOUND_LMN = "yes" ; then
+		SELECTED_NOTIFY="libmatenotify"
+		AC_DEFINE([HAVE_LIBMATENOTIFY],[1],[Define if libmatenotify was found])
+                RPM_BUILDREQUIRES_NOTIFY="BuildRequires: libmatenotify-devel >= 1.2.0"
+                RPM_REQUIRES_NOTIFY="Requires: libmatenotify >= 1.2.0"
+	else
+		EXIT_NOW="yes"
+		EXIT_MSG="Neither libnotify nor libmatenotify found. Cannot continue."
+	fi
+fi
+
+AC_SUBST([RPM_BUILDREQUIRES_NOTIFY])
+AC_SUBST([RPM_REQUIRES_NOTIFY])
+
+if test $EXIT_NOW = "yes" ; then
+        echo
+        echo $EXIT_MSG
+        echo
+        exit
+fi
+
 # Checks for libraries.
 
 # Check for packages
 PKG_CHECK_MODULES([GTK], [gtk+-2.0])
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
 PKG_CHECK_MODULES([PKGKIT_BLIB], [packagekit-glib2])
-PKG_CHECK_MODULES([LIBMATENOTIFY], [libmatenotify])
 PKG_CHECK_MODULES([LIBMATEPANELAPPLET_4], [libmatepanelapplet-4.0], [FOUND_LMPA_4="yes"], [FOUND_LMPA_4="no"])
 PKG_CHECK_MODULES([LIBMATEPANELAPPLET_3], [libmatepanelapplet-3.0], [FOUND_LMPA_3="yes"], [FOUND_LMPA_3="no"])
 if test $FOUND_LMPA_4 = "yes" ; then
@@ -302,6 +341,7 @@ echo
 echo "Configuration complete:"
 echo " * Selected backend: $SELECTED_BACKEND"
 echo " * Selected installer: $SELECTED_INSTALLER"
+echo " * Selected notification library: $SELECTED_NOTIFY"
 echo
 echo "Now, run make."
 echo 
