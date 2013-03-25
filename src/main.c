@@ -160,8 +160,6 @@ static gboolean applet_check_icon (softupd_applet *applet) {
 
 
 static gboolean applet_listener(softupd_applet *applet) {
-	GMainLoop *loop;
-
 	#ifdef HAVE_PACKAGEKIT
 		(void) loop;    // "Use" it.
 		if(packagekit_main(applet))
@@ -179,22 +177,22 @@ static gboolean applet_listener(softupd_applet *applet) {
 
 	#ifdef HAVE_YUM
 		g_timeout_add(REFRESH_TIME, (GtkFunction) yum_main, (gpointer)applet);
-		loop = g_main_loop_new (NULL, FALSE);
-		g_main_loop_run (loop);
+		applet->loop = g_main_loop_new (NULL, FALSE);
+		g_main_loop_run (applet->loop);
 		return TRUE;
 	#endif
 
 	#ifdef HAVE_APTCHECK
 		g_timeout_add(REFRESH_TIME, (GtkFunction) aptcheck_main, (gpointer)applet);
-		loop = g_main_loop_new (NULL, FALSE);
-		g_main_loop_run (loop);
+		applet->loop = g_main_loop_new (NULL, FALSE);
+		g_main_loop_run (aplet->loop);
 		return TRUE;
 	#endif
 
 	#ifdef HAVE_APTGET
                 g_timeout_add(REFRESH_TIME, (GtkFunction) aptget_main, (gpointer)applet);
-                loop = g_main_loop_new (NULL, FALSE);
-                g_main_loop_run (loop);
+                applet->loop = g_main_loop_new (NULL, FALSE);
+                g_main_loop_run (applet->loop);
 		return TRUE;
 	#endif
 }
@@ -236,6 +234,13 @@ static void applet_back_change (MatePanelApplet *a, MatePanelAppletBackgroundTyp
 
 }
 
+static void applet_destroy(MatePanelApplet *applet_widget, softupd_applet *applet) {
+	g_main_loop_quit(applet->loop);
+        g_assert(applet);
+        g_free(applet);
+        return;
+}
+
 static gboolean applet_main (MatePanelApplet *applet_widget, const gchar *iid, gpointer data) {
 	softupd_applet *applet;
 
@@ -269,8 +274,9 @@ static gboolean applet_main (MatePanelApplet *applet_widget, const gchar *iid, g
 
         g_signal_connect (G_OBJECT (applet->event_box), "button_press_event", G_CALLBACK (applet_on_button_press), (gpointer)applet);
         g_signal_connect(G_OBJECT(applet->applet), "change_background", G_CALLBACK (applet_back_change), (gpointer)applet);
+	g_signal_connect(G_OBJECT(applet->applet), "destroy", G_CALLBACK(applet_destroy), (gpointer)applet);
 
-	//Tooltip
+	// Tooltip
 	gtk_widget_set_tooltip_text (GTK_WIDGET (applet->applet), _("Your system is up to date."));
 
 	gtk_widget_show_all (GTK_WIDGET (applet->applet));

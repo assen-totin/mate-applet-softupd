@@ -70,15 +70,13 @@ gboolean plugin_loop(softupd_applet *applet) {
 }
 
 gboolean packagekit_main(softupd_applet *applet) {
-	GMainLoop *loop;
-	
 	g_type_init();
 
-	loop = g_main_loop_new(NULL, FALSE);
+	applet->loop = g_main_loop_new(NULL, FALSE);
 
 	g_timeout_add(REFRESH_TIME, (GSourceFunc)plugin_loop, (gpointer)applet);
 
-	g_main_loop_run(loop);
+	g_main_loop_run(applet->loop);
 
 	//g_object_unref(client);
 

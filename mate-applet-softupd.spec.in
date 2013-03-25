@@ -85,6 +85,9 @@ rm -rf "${RPM_BUILD_ROOT}"
 %changelog
 #-------------------------------------------------------------------------------
 
+* Mon Mar 25 2013 Assen Totin <assen.totin@gmail.com>
+- Release 0.2.6
+
 * Thu Mar 7 2013 Assen Totin <assen.totin@gmail.com>
 - Release 0.2.5
 
