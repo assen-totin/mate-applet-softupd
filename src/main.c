@@ -161,7 +161,6 @@ static gboolean applet_check_icon (softupd_applet *applet) {
 
 static gboolean applet_listener(softupd_applet *applet) {
 	#ifdef HAVE_PACKAGEKIT
-		(void) loop;    // "Use" it.
 		if(packagekit_main(applet))
 			return TRUE;
 		else
