@@ -1,4 +1,4 @@
-Mar 25, 2013 - Version 0.2.6
+Mar 25, 2013 - Version 0.2.7
 ============================
 * Added autodetection of libnotify and libmatenotify plus an option to force
 one of them at compile time.
