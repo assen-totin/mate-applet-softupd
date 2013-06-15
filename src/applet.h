@@ -48,6 +48,8 @@ typedef struct {
 	int pending;
 	int icon_status;
 	int flip_icon;
+	int *pid_arr;
+	int pid_cnt;
 } softupd_applet;
 
 // Prototypes

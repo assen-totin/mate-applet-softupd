@@ -58,7 +58,28 @@ static void quitDialogOK( GtkWidget *widget, gpointer data ){
 		if (status == 0) {
 			int pid = fork();
 			if (pid == 0) {
+				// Child process
 				execl(INSTALLER_BINARY, INSTALLER_BINARY, NULL);
+			}
+			// Parent process continues
+			// Find a slot to store the PID; if none, realloc() one slot up and occupy it
+			int match = 0;
+			int i;
+			for (i=0; i < applet->pid_cnt; i++ ) {
+				if (applet->pid_arr[i] == 0) {
+					match = 1;
+					break;
+				}
+			}
+			// If slot found, use it
+			if (match == 1) 
+				applet->pid_arr[i] = pid;
+			else {
+				// Re-allocate memory and use the new slot, bump counter
+				void *_tmp = realloc(applet->pid_arr, ((applet->pid_cnt + 1) * sizeof(int)));
+				applet->pid_arr = (int *)_tmp;
+				applet->pid_cnt ++;
+				big->pid_arr[big->pid_cnt - 1] = pid;
 			}
 		}
 		else {
@@ -73,6 +94,24 @@ static void quitDialogCancel( GtkWidget *widget, gpointer data ){
         gtk_widget_destroy(quitDialog);
 }
 
+
+gboolean check_dead_bones() {
+	int status;
+	int pid = waitpid(-1, &status, WNOHANG);
+	if (pid > 0) {
+		// Look up the died pid in the stack, clear
+		int i;
+		for (i=0; i < applet->pid_cnt; i++) {
+			if (pid == applet->pid_arr[i]) {
+				applet->pid_arr[i] = 0;
+				break;
+			}
+		}
+		// We could, in theory, check if the zeroed slot is the last one and realloc() down one slot
+		// However, this seems unnecessary as we should never in practive have more than one child running.
+	}
+	return 1;
+}
 
 void warn_missing_installer(GtkWidget *widget) {
         char msg1[1024];
@@ -236,6 +275,7 @@ static void applet_back_change (MatePanelApplet *a, MatePanelAppletBackgroundTyp
 static void applet_destroy(MatePanelApplet *applet_widget, softupd_applet *applet) {
 	g_main_loop_quit(applet->loop);
         g_assert(applet);
+	g_free(applet->pid_arr);
         g_free(applet);
         return;
 }
@@ -258,6 +298,11 @@ static gboolean applet_main (MatePanelApplet *applet_widget, const gchar *iid, g
 	applet->icon_status = 0;
 	applet->flip_icon = 0;
 	applet->applet = applet_widget;
+
+	// Children array
+	applet->pid_cnt = 1;
+	applet->pid_arr = g_malloc0(sizeof(int));
+	applet->pid_arr[0] = 0;
 
 	// Get an image
 	char image_file[1024];
