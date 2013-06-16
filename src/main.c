@@ -173,6 +173,9 @@ static gboolean applet_check_icon (softupd_applet *applet) {
 	char image_file[1024];
 	char msg[1024];
 
+	// Check if there are dead bones to collect
+	check_dead_bones();
+
 	if (applet->icon_status == 0) {
 		sprintf(&image_file[0], "%s/%s", APPLET_ICON_PATH, APPLET_ICON_OFF);
 		gtk_widget_set_tooltip_text (GTK_WIDGET (applet->applet), _("Your system is up to date."));
