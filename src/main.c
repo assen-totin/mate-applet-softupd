@@ -96,9 +96,8 @@ static void quitDialogCancel( GtkWidget *widget, gpointer data ){
 
 
 gboolean check_dead_bones() {
-	int status;
-	int pid = waitpid(-1, &status, WNOHANG);
-	if (pid > 0) {
+	int status, pid;
+	while (pid = waitpid(-1, &status, WNOHANG) > 0) {
 		// Look up the died pid in the stack, clear
 		int i;
 		for (i=0; i < applet->pid_cnt; i++) {
