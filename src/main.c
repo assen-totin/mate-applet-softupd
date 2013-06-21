@@ -48,8 +48,9 @@ void push_notification (gchar *title, gchar *body, gchar *icon) {
 
 
 static void quitDialogOK( GtkWidget *widget, gpointer data ){
-        GtkWidget *quitDialog = data;
-        gtk_widget_destroy(quitDialog);
+        //GtkWidget *quitDialog = data;
+        softupd_applet *applet = data;
+        gtk_widget_destroy(applet->quitDialog);
 	struct stat buffer;
 	int status;
 
@@ -79,7 +80,7 @@ static void quitDialogOK( GtkWidget *widget, gpointer data ){
 				void *_tmp = realloc(applet->pid_arr, ((applet->pid_cnt + 1) * sizeof(int)));
 				applet->pid_arr = (int *)_tmp;
 				applet->pid_cnt ++;
-				big->pid_arr[big->pid_cnt - 1] = pid;
+				applet->pid_arr[applet->pid_cnt - 1] = pid;
 			}
 		}
 		else {
@@ -147,22 +148,22 @@ static gboolean applet_on_button_press (GtkWidget *event_box, GdkEventButton *ev
 	
 	label = gtk_label_new (&msg1[0]);
 
-	GtkWidget *quitDialog = gtk_dialog_new_with_buttons ("Software Updater", GTK_WINDOW(applet->event_box), GTK_DIALOG_MODAL, NULL);
-	GtkWidget *buttonOK = gtk_dialog_add_button (GTK_DIALOG(quitDialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	applet->quitDialog = gtk_dialog_new_with_buttons ("Software Updater", GTK_WINDOW(applet->event_box), GTK_DIALOG_MODAL, NULL);
+	GtkWidget *buttonOK = gtk_dialog_add_button (GTK_DIALOG(applet->quitDialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
 
 	#ifdef INSTALLER_BINARY
-		GtkWidget *buttonCancel = gtk_dialog_add_button (GTK_DIALOG(quitDialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+		GtkWidget *buttonCancel = gtk_dialog_add_button (GTK_DIALOG(applet->quitDialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	#endif
 
-	gtk_dialog_set_default_response (GTK_DIALOG (quitDialog), GTK_RESPONSE_CANCEL);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(quitDialog)->vbox), label);
-        g_signal_connect (G_OBJECT(buttonOK), "clicked", G_CALLBACK (quitDialogOK), (gpointer) quitDialog);
+	gtk_dialog_set_default_response (GTK_DIALOG (applet->quitDialog), GTK_RESPONSE_CANCEL);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(applet->quitDialog)->vbox), label);
+        g_signal_connect (G_OBJECT(buttonOK), "clicked", G_CALLBACK (quitDialogOK), (gpointer) applet);
 
 	#ifdef INSTALLER_BINARY
-	        g_signal_connect (G_OBJECT(buttonCancel), "clicked", G_CALLBACK (quitDialogCancel), (gpointer) quitDialog);
+	        g_signal_connect (G_OBJECT(buttonCancel), "clicked", G_CALLBACK (quitDialogCancel), (gpointer) applet->quitDialog);
 	#endif
 
-        gtk_widget_show_all (GTK_WIDGET(quitDialog));
+        gtk_widget_show_all (GTK_WIDGET(applet->quitDialog));
 
 	return TRUE;
 }

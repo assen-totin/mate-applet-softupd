@@ -24,6 +24,7 @@
 #include <libintl.h>
 #include <sys/stat.h>
 #include <glib.h>
+#include <stdlib.h>
 #include <wait.h>
 
 #ifdef HAVE_LIBMATENOTIFY
@@ -46,6 +47,7 @@ typedef struct {
 	MatePanelApplet *applet;
         GtkWidget *image;
         GtkWidget *event_box;
+	GtkWidget *quitDialog;
 	int pending;
 	int icon_status;
 	int flip_icon;
