@@ -95,7 +95,7 @@ static void quitDialogCancel( GtkWidget *widget, gpointer data ){
 }
 
 
-gboolean check_dead_bones() {
+gboolean check_dead_bones(softupd_applet *applet) {
 	int status, pid;
 	while (pid = waitpid(-1, &status, WNOHANG) > 0) {
 		// Look up the died pid in the stack, clear
@@ -173,7 +173,7 @@ static gboolean applet_check_icon (softupd_applet *applet) {
 	char msg[1024];
 
 	// Check if there are dead bones to collect
-	check_dead_bones();
+	check_dead_bones(applet);
 
 	if (applet->icon_status == 0) {
 		sprintf(&image_file[0], "%s/%s", APPLET_ICON_PATH, APPLET_ICON_OFF);

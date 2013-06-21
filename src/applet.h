@@ -24,6 +24,7 @@
 #include <libintl.h>
 #include <sys/stat.h>
 #include <glib.h>
+#include <wait.h>
 
 #ifdef HAVE_LIBMATENOTIFY
 	#include <libmatenotify/notify.h>
