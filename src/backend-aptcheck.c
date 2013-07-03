@@ -46,7 +46,7 @@ void aptcheck_main (softupd_applet *applet) {
 	else {
 		int status;
 
-                char line[32], res[32];
+                char line[1024], res[32];
 		char *res_p = &res[0];
                 close(pipefd[1]);
                 FILE *fp = fdopen(pipefd[0], "r");
@@ -59,10 +59,10 @@ void aptcheck_main (softupd_applet *applet) {
 
 		int tmp_icon = applet->icon_status;
 
-		if (applet->data.pending != 0)
+		if (applet->pending != 0)
 			applet->icon_status = 1;
 		else
-			aplet->icon_status = 0;
+			applet->icon_status = 0;
 
 	        if (tmp_icon != applet->icon_status)
                         applet->flip_icon = 1;

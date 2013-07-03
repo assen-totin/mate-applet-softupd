@@ -226,7 +226,7 @@ else
         	SELECTED_INSTALLER="yumex"
 	elif test $CHECK_GPKUPDATEVIEWER = "yes" ; then
         	SELECTED_INSTALLER="gpk-update-viewer"
-	elif test $CHECK_UPDATEMANAGER != "yes" ; then
+	elif test $CHECK_UPDATEMANAGER = "yes" ; then
         	SELECTED_INSTALLER="update-manager"
 	else
 		SELECTED_INSTALLER="none"

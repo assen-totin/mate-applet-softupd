@@ -226,7 +226,7 @@ static gboolean applet_listener(softupd_applet *applet) {
 	#ifdef HAVE_APTCHECK
 		g_timeout_add(REFRESH_TIME, (GtkFunction) aptcheck_main, (gpointer)applet);
 		applet->loop = g_main_loop_new (NULL, FALSE);
-		g_main_loop_run (aplet->loop);
+		g_main_loop_run (applet->loop);
 		return TRUE;
 	#endif
 
