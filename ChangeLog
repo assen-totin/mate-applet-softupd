@@ -1,3 +1,7 @@
+
+===========================
+* Fixed typos preventing proper build on Debian and derivates.
+
 Jun 22, 2013 - Version 0.2.8
 ============================
 * Fixed zombie process when using graphical package updater like yumex.
