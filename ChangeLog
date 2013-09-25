@@ -1,6 +1,7 @@
-
+Sep 26 2013 - Version 0.2.9
 ===========================
 * Fixed typos preventing proper build on Debian and derivates.
+* Updated autoconf to accept a non-standard libexec dir
 
 Jun 22, 2013 - Version 0.2.8
 ============================
