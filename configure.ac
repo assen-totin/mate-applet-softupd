@@ -1,5 +1,5 @@
 AC_PREREQ([2.66])
-AC_INIT([mate-applet-softupd], [0.2.9], [assen.totin@gmail.com])
+AC_INIT([mate-applet-softupd], [0.2.10], [assen.totin@gmail.com])
 AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([-Wall])
@@ -11,12 +11,6 @@ fi
 if test "x$exec_prefix" = "xNONE" ; then
 	exec_prefix=$prefix
 fi
-LIBEXECDIR=$prefix/libexec
-if test "x$libexecdir" = "xNONE" ; then
-	LIBEXECDIR=$prefix/libexec
-else
-	LIBEXECDIR=$libexecdir
-fi
 PREFIX=$prefix
 AC_SUBST([PREFIX])
 BINDIR=$exec_prefix/bin
@@ -25,7 +19,10 @@ SBINDIR=$exec_prefix/sbin
 AC_SUBST([SBINDIR])
 DATAROOTDIR=$prefix/share
 AC_SUBST([DATAROOTDIR])
-#LIBEXECDIR=$prefix/libexec
+LIBEXECDIR=$prefix/libexec
+if test "$libexecdir" != '${exec_prefix}/libexec'; then
+        LIBEXECDIR=$libexecdir
+fi
 AC_SUBST([LIBEXECDIR])
 PIXMAPDIR=$prefix/share/pixmaps
 AC_SUBST([PIXMAPDIR])
