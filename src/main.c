@@ -53,14 +53,23 @@ static void quitDialogOK( GtkWidget *widget, gpointer data ){
         gtk_widget_destroy(applet->quitDialog);
 	struct stat buffer;
 	int status;
+	int uid;
 
 	#ifdef INSTALLER_BINARY
 		status = stat(INSTALLER_BINARY, &buffer);
 		if (status == 0) {
+			// Get our UID
+			uid = getuid();
+
 			int pid = fork();
 			if (pid == 0) {
 				// Child process
-				execl(INSTALLER_BINARY, INSTALLER_BINARY, NULL);
+				// This is ugly, but no other way around it right now: 
+				// yumex requires --root to run when UID is 0, so keep it happy.
+				if ((uid == 0) && !strcmp(INSTALLER_BINARY, "yumex"))
+					execl(INSTALLER_BINARY, INSTALLER_BINARY, "--root", NULL);
+				else
+					execl(INSTALLER_BINARY, INSTALLER_BINARY, NULL);
 			}
 			// Parent process continues
 			// Find a slot to store the PID; if none, realloc() one slot up and occupy it
