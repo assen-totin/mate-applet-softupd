@@ -66,7 +66,7 @@ static void quitDialogOK( GtkWidget *widget, gpointer data ){
 				// Child process
 				// This is ugly, but no other way around it right now: 
 				// yumex requires --root to run when UID is 0, so keep it happy.
-				if ((uid == 0) && !strcmp(INSTALLER_BINARY, "yumex"))
+				if ((uid == 0) && strstr(INSTALLER_BINARY, "yumex"))
 					execl(INSTALLER_BINARY, INSTALLER_BINARY, "--root", NULL);
 				else
 					execl(INSTALLER_BINARY, INSTALLER_BINARY, NULL);

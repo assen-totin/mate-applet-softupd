@@ -1,3 +1,8 @@
+Apr 26, 2014 - Version 0.2.11
+=============================
+* When yumex is compiled-in as installer, check the running UID and supply
+proper command-line argument to yumes when UID=0.
+
 Oct 16, 2013 - Version 0.2.10
 =============================
 * Update in libexecdir handling.
