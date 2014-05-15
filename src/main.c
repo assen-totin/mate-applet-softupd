@@ -285,8 +285,13 @@ static void applet_back_change (MatePanelApplet *a, MatePanelAppletBackgroundTyp
 }
 
 static void applet_destroy(MatePanelApplet *applet_widget, softupd_applet *applet) {
-	g_main_loop_quit(applet->loop);
         g_assert(applet);
+
+	// Remove all timers
+	while (g_source_remove_by_user_data((gpointer) applet))
+		;
+
+	g_main_loop_quit(applet->loop);
 	g_free(applet->pid_arr);
         g_free(applet);
         return;

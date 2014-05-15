@@ -1,3 +1,6 @@
+* Stop all timers when shutting down (prevents unlikely crash if applet
+is destroyed and a scheduled job attempts to run).
+
 Apr 26, 2014 - Version 0.2.11
 =============================
 * When yumex is compiled-in as installer, check the running UID and supply
