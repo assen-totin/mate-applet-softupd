@@ -113,6 +113,8 @@ elif test $FORCE_BACKEND = "package-kit" ; then
 		SELECTED_BACKEND=$FORCE_BACKEND
                 RPM_REQUIRES_BACKEND="Requires: PackageKit"
                 RPM_BUILDREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
+                AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
+                ADDITIONAL_PACKAGES="packagekit-glib2"
 	fi
 elif test $FORCE_BACKEND = "yum-updatesd" ; then
         if test $CHECK_YUMUPDATESD = "no" ; then
@@ -121,6 +123,8 @@ elif test $FORCE_BACKEND = "yum-updatesd" ; then
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
 		RPM_REQUIRES_BACKEND="Requires: yum-updatesd"
+                AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
+                ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
         fi
 elif test $FORCE_BACKEND = "yum" ; then
         if test $CHECK_YUM = "no" ; then
