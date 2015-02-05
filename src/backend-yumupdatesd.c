@@ -77,7 +77,7 @@ int yumupdatesd_main (softupd_applet *applet){
         dbus_connection_setup_with_g_main (bus, NULL);
 
         dbus_bus_add_match (bus, "type='signal', interface='edu.duke.linux.yum'", &error);
-        dbus_connection_add_filter (bus, signal_filter, applet->loop, (gpointer)applet);
+        dbus_connection_add_filter (bus, (DBusHandleMessageFunction)signal_filter, (void *)applet, NULL);
 
         g_main_loop_run(applet->loop);
 
