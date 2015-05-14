@@ -107,7 +107,7 @@ static void quitDialogCancel( GtkWidget *widget, gpointer data ){
 
 gboolean check_dead_bones(softupd_applet *applet) {
 	int status, pid;
-	while (pid = waitpid(-1, &status, WNOHANG) > 0) {
+	while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
 		// Look up the died pid in the stack, clear
 		int i;
 		for (i=0; i < applet->pid_cnt; i++) {
@@ -223,6 +223,13 @@ static gboolean applet_listener(softupd_applet *applet) {
 			return TRUE;
 		else
 			return FALSE;
+	#endif
+
+	#ifdef HAVE_DNF
+		g_timeout_add(REFRESH_TIME, (GtkFunction) dnf_main, (gpointer)applet);
+		applet->loop = g_main_loop_new (NULL, FALSE);
+		g_main_loop_run (applet->loop);
+		return TRUE;
 	#endif
 
 	#ifdef HAVE_YUM

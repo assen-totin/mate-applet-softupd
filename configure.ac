@@ -1,5 +1,5 @@
 AC_PREREQ([2.66])
-AC_INIT([mate-applet-softupd], [0.2.12], [assen.totin@gmail.com])
+AC_INIT([mate-applet-softupd], [0.3.0], [assen.totin@gmail.com])
 AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([-Wall])
@@ -66,9 +66,9 @@ AC_ARG_ENABLE([backend],[AS_HELP_STRING([--enable-backend],[use the specified ba
 ## Check for backend: packagekit
 AC_CHECK_PROG([CHECK_PACKAGEKIT],[pkcon],[yes],[no])
 if test $CHECK_PACKAGEKIT = "no" ; then
-        echo "*** package-kit not found."
+	echo "*** package-kit not found."
 else
-        FOUND_BACKEND="yes"
+	FOUND_BACKEND="yes"
 fi
 
 ## Check for backend: yum-updatesd
@@ -79,13 +79,22 @@ else
 	FOUND_BACKEND="yes"
 fi
 
+## Check for backend: dnf
+AC_CHECK_PROG([CHECK_DNF],[dnf],[yes],[no])
+if test $CHECK_DNF = "no" ; then
+	echo "*** dnf not found."
+else
+	FOUND_BACKEND="yes"
+	DNF_VIEWER=`which dnf`
+fi
+
 ## Check for backend: yum
 AC_CHECK_PROG([CHECK_YUM],[yum],[yes],[no])
 if test $CHECK_YUM = "no" ; then
-        echo "*** yum not found."
+	echo "*** yum not found."
 else
-        FOUND_BACKEND="yes"
-        YUM_VIEWER=`which yum`
+	FOUND_BACKEND="yes"
+	YUM_VIEWER=`which yum`
 fi
 
 ## Check for backend: apt-check
@@ -111,36 +120,48 @@ elif test $FORCE_BACKEND = "package-kit" ; then
 		EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
-                RPM_REQUIRES_BACKEND="Requires: PackageKit"
-                RPM_BUILDREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
-                AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
-                ADDITIONAL_PACKAGES="packagekit-glib2"
+		RPM_REQUIRES_BACKEND="Requires: PackageKit"
+		RPM_BUILDREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
+		AC_DEFINE([HAVE_PACKAGEKIT],[1],[Define if package-kit was found])
+		ADDITIONAL_PACKAGES="packagekit-glib2"
 	fi
 elif test $FORCE_BACKEND = "yum-updatesd" ; then
-        if test $CHECK_YUMUPDATESD = "no" ; then
-                EXIT_NOW="yes"
-                EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
+	if test $CHECK_YUMUPDATESD = "no" ; then
+		EXIT_NOW="yes"
+		EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
 		RPM_REQUIRES_BACKEND="Requires: yum-updatesd"
-                AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
-                ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
-        fi
+		AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
+		ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
+	fi
+elif test $FORCE_BACKEND = "dnf" ; then
+	if test $CHECK_YUM = "no" ; then
+		EXIT_NOW="yes"
+		EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
+	else
+		SELECTED_BACKEND=$FORCE_BACKEND
+		AC_DEFINE([HAVE_DNF],[1],[Define if dnf was found])
+		AC_DEFINE_UNQUOTED([DNF_BINARY],["$DNF_VIEWER"],[Define where is the yum binary])
+		RPM_REQUIRES_BACKEND="Requires: dnf"
+	fi
 elif test $FORCE_BACKEND = "yum" ; then
-        if test $CHECK_YUM = "no" ; then
-                EXIT_NOW="yes"
-                EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
+	if test $CHECK_YUM = "no" ; then
+		EXIT_NOW="yes"
+		EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
+		AC_DEFINE([HAVE_YUM],[1],[Define if yum was found])
+		AC_DEFINE_UNQUOTED([YUM_BINARY],["$YUM_VIEWER"],[Define where is the yum binary])
 		RPM_REQUIRES_BACKEND="Requires: yum"
-        fi
+	fi
 elif test $FORCE_BACKEND = "apt-check" ; then
-        if test $APTCHECK_PROG = "no" ; then
-                EXIT_NOW="yes"
-                EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
+	if test $APTCHECK_PROG = "no" ; then
+		EXIT_NOW="yes"
+		EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
 		SELECTED_BACKEND=$FORCE_BACKEND
-        fi
+	fi
 else
 	echo "Chosing backend wisely..."
 	if test $CHECK_PACKAGEKIT != "no" ; then
@@ -151,18 +172,23 @@ else
 		RPM_BUILDREQUIRES_BACKEND="BuildRequires: PackageKit-glib-devel, PackageKit"
 	elif test $CHECK_YUMUPDATESD != "no" ; then
 		SELECTED_BACKEND="yum-updatesd"
-	        AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
-	        ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
+		AC_DEFINE([HAVE_YUMUPDATESD],[1],[Define if yum-updatesd was found])
+		ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
 		RPM_REQUIRES_BACKEND="Requires: yum-updatesd"
+	elif test $CHECK_DNF != "no" ; then
+		SELECTED_BACKEND="dnf"
+		AC_DEFINE([HAVE_DNF],[1],[Define if dnf was found])
+		AC_DEFINE_UNQUOTED([DNF_BINARY],["$DNF_VIEWER"],[Define where is the yum binary])
+		RPM_REQUIRES_BACKEND="Requires: dnf"
 	elif test $CHECK_YUM != "no" ; then
 		SELECTED_BACKEND="yum"
-	        AC_DEFINE([HAVE_YUM],[1],[Define if yum was found])
-        	AC_DEFINE_UNQUOTED([YUM_BINARY],["$YUM_VIEWER"],[Define where is the yum binary])
+		AC_DEFINE([HAVE_YUM],[1],[Define if yum was found])
+		AC_DEFINE_UNQUOTED([YUM_BINARY],["$YUM_VIEWER"],[Define where is the yum binary])
 		RPM_REQUIRES_BACKEND="Requires: yum"
 	elif test $APTCHECK_PROG != "no" ; then
 		SELECTED_BACKEND="apt-check"
-	        AC_DEFINE([HAVE_APTCHECK],[1],[Define if apt-check was found])
-        	AC_DEFINE_UNQUOTED([APTCHECK_BINARY],["$APTCHECK_PROG"],[Define where is the apt-check binary])
+		AC_DEFINE([HAVE_APTCHECK],[1],[Define if apt-check was found])
+		AC_DEFINE_UNQUOTED([APTCHECK_BINARY],["$APTCHECK_PROG"],[Define where is the apt-check binary])
 	fi
 fi
 

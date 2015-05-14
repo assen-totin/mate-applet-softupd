@@ -25,7 +25,7 @@
 #include "../config.h"
 #include "applet.h"
 
-void yum_main (softupd_applet *applet) {
+void dnf_main (softupd_applet *applet) {
 	int pipefd[2];
 	pipe(pipefd);
 
@@ -33,7 +33,7 @@ void yum_main (softupd_applet *applet) {
 	
 	// CHILD
 	if (pid == 0) {
-		// If there are aupdates, yum will return with exit code 100
+		// If there are aupdates, dnf will return with exit code 100
 		// and print the updates on stdout, one per line. 
 		// We need to count them.
                 close(pipefd[0]);
@@ -41,14 +41,14 @@ void yum_main (softupd_applet *applet) {
                 dup2(pipefd[1], 2);
                 close(pipefd[1]);
 
-		execlp(YUM_BINARY, YUM_BINARY, "check-update", (char *)NULL);
+		execlp(DNF_BINARY, DNF_BINARY, "check-update", (char *)NULL);
 	}
 
 	// PARENT
 	else {
 		int status;
 		char line[1024];
-		// Count the lines, skipping the first which yum always prints.
+		// Count the lines, skipping the first which dnf always prints.
 		int line_cnt = -1;
 
 		close(pipefd[1]);
