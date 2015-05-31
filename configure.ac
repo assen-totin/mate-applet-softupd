@@ -194,6 +194,7 @@ fi
 
 AM_CONDITIONAL([WITH_PACKAGEKIT], [test $SELECTED_BACKEND = "package-kit"])
 AM_CONDITIONAL([WITH_YUMUPDATESD], [test $SELECTED_BACKEND = "yum-updatesd"])
+AM_CONDITIONAL([WITH_DNF], [test $SELECTED_BACKEND = "dnf"])
 AM_CONDITIONAL([WITH_YUM], [test $SELECTED_BACKEND = "yum"])
 AM_CONDITIONAL([WITH_APTCHECK], [test $SELECTED_BACKEND = "apt-check"])
 AC_SUBST([RPM_REQUIRES_BACKEND])
@@ -202,7 +203,7 @@ AC_SUBST([RPM_BUILDREQUIRES_BACKEND])
 # Check which software installer to use
 FOUND_INSTALLER="no"
 FORCE_INSTALLER="no"
-AC_ARG_ENABLE([installer],[AS_HELP_STRING([--enable-installer],[use the specified backend: yumex, gpk-update-viewer, update-manager (default: pick up the first available from the list)])],[FORCE_INSTALLER=$enableval])
+AC_ARG_ENABLE([installer],[AS_HELP_STRING([--enable-installer],[use the specified backend: yumex-dnf, yumex, gpk-update-viewer, update-manager (default: pick up the first available from the list)])],[FORCE_INSTALLER=$enableval])
 
 # Check for yumex
 AC_CHECK_PROG([CHECK_YUMEXVIEWER],[yumex],[yes],[no])
@@ -211,6 +212,15 @@ if test $CHECK_YUMEXVIEWER = "no" ; then
 else
         FOUND_INSTALLER="yes"
         YUMEXVIEWER_INSTALLER=`which yumex`
+fi
+
+# Check for yumex-dnf
+AC_CHECK_PROG([CHECK_YUMEXDNFVIEWER],[yumex-dnf],[yes],[no])
+if test $CHECK_YUMEXDNFVIEWER = "no" ; then
+        echo "*** yumex-dnf not found."
+else
+        FOUND_INSTALLER="yes"
+        YUMEXDNFVIEWER_INSTALLER=`which yumex-dnf`
 fi
 
 # Check for gpk-update-viewer
@@ -239,6 +249,14 @@ if test $FORCE_INSTALLER = "yumex" ; then
                 EXIT_NOW="yes"
                 EXIT_MSG="Forced installer $FORCE_INSTALLER not found. Cannot continue."	
 	fi
+elif test $FORCE_INSTALLER = "yumex-dnf" ; then
+	if test $CHECK_YUMEXDNFVIEWER = "yes" ; then
+		SELECTED_INSTALLER="yumex-dnf"
+	else 
+                EXIT_NOW="yes"
+                EXIT_MSG="Forced installer $FORCE_INSTALLER not found. Cannot continue."	
+	fi
+
 elif test $FORCE_INSTALLER = "gpk-update-viewer" ; then
         if test $CHECK_GPKUPDATEVIEWER = "yes" ; then
                 SELECTED_INSTALLER="gpk-update-viewer"
@@ -255,7 +273,9 @@ elif test $FORCE_INSTALLER = "update-manager" ; then
         fi
 else
 	echo "Chosing installer wisely..."
-	if test $CHECK_YUMEXVIEWER = "yes" ; then
+	if test $CHECK_YUMEXDNFVIEWER = "yes" ; then
+        	SELECTED_INSTALLER="yumex-dnf"
+	elif test $CHECK_YUMEXVIEWER = "yes" ; then
         	SELECTED_INSTALLER="yumex"
 	elif test $CHECK_GPKUPDATEVIEWER = "yes" ; then
         	SELECTED_INSTALLER="gpk-update-viewer"
@@ -272,6 +292,10 @@ if test $SELECTED_INSTALLER = "yumex" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$YUMEXVIEWER_INSTALLER"],[Define where is the installer binary])
 	RPM_REQUIRES_INSTALLER="Requires: yumex"
 	RPM_BUILDREQUIRES_INSTALLER="BuildRequires:yumex"
+elif test $SELECTED_INSTALLER = "yumex-dnf" ; then
+        AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$YUMEXDNFVIEWER_INSTALLER"],[Define where is the installer binary])
+	RPM_REQUIRES_INSTALLER="Requires: yumex-dnf"
+	RPM_BUILDREQUIRES_INSTALLER="BuildRequires:yumex-dnf"
 elif test $SELECTED_INSTALLER = "gpk-update-viewer" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$GPKUPDATEVIEWER_INSTALLER"],[Define where is the installer binary])
 	RPM_REQUIRES_INSTALLER="Requires: gnome-packagekit"

@@ -61,3 +61,4 @@ int yumupdatesd_main();
 void yum_main();
 void aptcheck_main();
 void aptget_main();
+void dnf_main();

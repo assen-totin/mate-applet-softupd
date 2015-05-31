@@ -18,6 +18,10 @@ if WITH_YUM
 softupd_applet_SOURCES += backend-yum.c 
 endif
 
+if WITH_DNF
+softupd_applet_SOURCES += backend-dnf.c 
+endif
+
 if WITH_YUMUPDATESD
 softupd_applet_SOURCES += backend-yumupdatesd.c
 endif

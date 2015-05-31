@@ -1,6 +1,7 @@
-May 18, 2015 - Version 0.3.0
+May 31, 2015 - Version 0.3.0
 ============================
 * Add dnf as backend
+* Add yumex-dnf as installer
 * Fix a forked process PID detection when wait()-ing for it.
 
 Feb 5, 2015 - Version 0.2.12

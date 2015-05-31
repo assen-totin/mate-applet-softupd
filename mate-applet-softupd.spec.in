@@ -68,6 +68,9 @@ rm -rf "${RPM_BUILD_ROOT}"
 %{_datadir}/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service
 
 %changelog
+* Sun May 31 2015 Assen Totin <assen.totin@gmail.com>
+- Release 0.3.0
+
 * Thu Feb 5 2015 Assen Totin <assen.totin@gmail.com>
 - Release 0.2.12
 
