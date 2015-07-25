@@ -1,3 +1,7 @@
+Jul 25, 2015 - Version 0.3.1
+============================
+* Improve options for yumex-dnf when run as root.
+
 May 31, 2015 - Version 0.3.0
 ============================
 * Add dnf as backend
