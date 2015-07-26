@@ -46,7 +46,6 @@ void push_notification (gchar *title, gchar *body, gchar *icon) {
 }
 
 
-
 static void quitDialogOK( GtkWidget *widget, gpointer data ){
         //GtkWidget *quitDialog = data;
         softupd_applet *applet = data;
@@ -133,7 +132,13 @@ void warn_missing_installer(GtkWidget *widget) {
         GtkWidget *buttonOK = gtk_dialog_add_button (GTK_DIALOG(quitDialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
 
         gtk_dialog_set_default_response (GTK_DIALOG (quitDialog), GTK_RESPONSE_CANCEL);
-        gtk_container_add (GTK_CONTAINER (GTK_DIALOG(quitDialog)->vbox), label);
+
+		#ifdef HAVE_GTK2
+		gtk_container_add (GTK_CONTAINER (GTK_DIALOG(quitDialog)->vbox), label);
+		#elif HAVE_GTK3
+		gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG(quitDialog))), label);
+		#endif
+
         g_signal_connect (G_OBJECT(buttonOK), "clicked", G_CALLBACK (quitDialogCancel), (gpointer) quitDialog);
 
         gtk_widget_show_all (GTK_WIDGET(quitDialog));
@@ -165,8 +170,14 @@ static gboolean applet_on_button_press (GtkWidget *event_box, GdkEventButton *ev
 	#endif
 
 	gtk_dialog_set_default_response (GTK_DIALOG (applet->quitDialog), GTK_RESPONSE_CANCEL);
+
+	#ifdef HAVE_GTK2
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(applet->quitDialog)->vbox), label);
-        g_signal_connect (G_OBJECT(buttonOK), "clicked", G_CALLBACK (quitDialogOK), (gpointer) applet);
+	#elif HAVE_GTK3
+	gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG(applet->quitDialog))), label);
+	#endif
+
+	g_signal_connect (G_OBJECT(buttonOK), "clicked", G_CALLBACK (quitDialogOK), (gpointer) applet);
 
 	#ifdef INSTALLER_BINARY
 	        g_signal_connect (G_OBJECT(buttonCancel), "clicked", G_CALLBACK (quitDialogCancel), (gpointer) applet->quitDialog);
@@ -226,69 +237,60 @@ static gboolean applet_listener(softupd_applet *applet) {
 	#endif
 
 	#ifdef HAVE_DNF
+		#ifdef HAVE_GTK2
 		g_timeout_add(REFRESH_TIME, (GtkFunction) dnf_main, (gpointer)applet);
+		#elif HAVE_GTK3
+		g_timeout_add(REFRESH_TIME, (GSourceFunc) dnf_main, (gpointer)applet);
+		#endif
 		applet->loop = g_main_loop_new (NULL, FALSE);
 		g_main_loop_run (applet->loop);
 		return TRUE;
 	#endif
 
 	#ifdef HAVE_YUM
+		#ifdef HAVE_GTK2
 		g_timeout_add(REFRESH_TIME, (GtkFunction) yum_main, (gpointer)applet);
+		#elif HAVE_GTK3
+		g_timeout_add(REFRESH_TIME, (GSourceFunc) yum_main, (gpointer)applet);
+		#endif
 		applet->loop = g_main_loop_new (NULL, FALSE);
 		g_main_loop_run (applet->loop);
 		return TRUE;
 	#endif
 
 	#ifdef HAVE_APTCHECK
+		#ifdef HAVE_GTK2
 		g_timeout_add(REFRESH_TIME, (GtkFunction) aptcheck_main, (gpointer)applet);
+		#elif HAVE_GTK3
+		g_timeout_add(REFRESH_TIME, (GSourceFunc) aptcheck_main, (gpointer)applet);
+		#endif
 		applet->loop = g_main_loop_new (NULL, FALSE);
 		g_main_loop_run (applet->loop);
 		return TRUE;
 	#endif
 
 	#ifdef HAVE_APTGET
-                g_timeout_add(REFRESH_TIME, (GtkFunction) aptget_main, (gpointer)applet);
-                applet->loop = g_main_loop_new (NULL, FALSE);
-                g_main_loop_run (applet->loop);
+		#ifdef HAVE_GTK2
+		g_timeout_add(REFRESH_TIME, (GtkFunction) aptget_main, (gpointer)applet);
+		#elif HAVE_GTK3
+		g_timeout_add(REFRESH_TIME, (GSourceFunc) aptget_main, (gpointer)applet);
+		#endif
+		applet->loop = g_main_loop_new (NULL, FALSE);
+		g_main_loop_run (applet->loop);
 		return TRUE;
 	#endif
 }
 
 
+#ifdef HAVE_GTK2
 static void applet_back_change (MatePanelApplet *a, MatePanelAppletBackgroundType type, GdkColor *color, GdkPixmap *pixmap, softupd_applet *applet) {
-        /* taken from the TrashApplet */
-        GtkRcStyle *rc_style;
-        GtkStyle *style;
+#elif HAVE_GTK3
+static void applet_back_change (MatePanelApplet *a, MatePanelAppletBackgroundType type, GdkRGBA *color, cairo_pattern_t *pattern, softupd_applet *applet) {
+#endif
 
-        /* reset style */
-        gtk_widget_set_style (GTK_WIDGET(applet->applet), NULL);
-	gtk_widget_set_style (GTK_WIDGET(applet->event_box), NULL);
-        rc_style = gtk_rc_style_new ();
-        gtk_widget_modify_style (GTK_WIDGET(applet->applet), rc_style);
-	gtk_widget_modify_style (GTK_WIDGET(applet->event_box), rc_style);
-        g_object_unref (rc_style);
-
-        switch (type) {
-                case PANEL_COLOR_BACKGROUND:
-                        gtk_widget_modify_bg (GTK_WIDGET(applet->applet), GTK_STATE_NORMAL, color);
-			gtk_widget_modify_bg (GTK_WIDGET(applet->event_box), GTK_STATE_NORMAL, color);
-                        break;
-
-                case PANEL_PIXMAP_BACKGROUND:
-                        style = gtk_style_copy (gtk_widget_get_style (GTK_WIDGET(applet->applet)));
-                        if (style->bg_pixmap[GTK_STATE_NORMAL])
-                                g_object_unref (style->bg_pixmap[GTK_STATE_NORMAL]);
-                        style->bg_pixmap[GTK_STATE_NORMAL] = g_object_ref(pixmap);
-                        gtk_widget_set_style (GTK_WIDGET(applet->applet), style);
-			gtk_widget_set_style (GTK_WIDGET(applet->event_box), style);
-                        g_object_unref (style);
-                        break;
-
-                case PANEL_NO_BACKGROUND:
-                default:
-                        break;
-        }
-
+	// Use MATE-provided wrapper to change the background (same for both GTK2 and GTK3)
+	mate_panel_applet_set_background_widget (a, GTK_WIDGET(applet->applet));
+	mate_panel_applet_set_background_widget (a, GTK_WIDGET(applet->event_box));
 }
 
 static void applet_destroy(MatePanelApplet *applet_widget, softupd_applet *applet) {
@@ -338,10 +340,10 @@ static gboolean applet_main (MatePanelApplet *applet_widget, const gchar *iid, g
 	gtk_container_add (GTK_CONTAINER (applet->event_box), applet->image);
 
 	// Put the container into the applet
-        gtk_container_add (GTK_CONTAINER (applet->applet), applet->event_box);
+	gtk_container_add (GTK_CONTAINER (applet->applet), applet->event_box);
 
-        g_signal_connect (G_OBJECT (applet->event_box), "button_press_event", G_CALLBACK (applet_on_button_press), (gpointer)applet);
-        g_signal_connect(G_OBJECT(applet->applet), "change_background", G_CALLBACK (applet_back_change), (gpointer)applet);
+	g_signal_connect (G_OBJECT (applet->event_box), "button_press_event", G_CALLBACK (applet_on_button_press), (gpointer)applet);
+	g_signal_connect(G_OBJECT(applet->applet), "change_background", G_CALLBACK (applet_back_change), (gpointer)applet);
 	g_signal_connect(G_OBJECT(applet->applet), "destroy", G_CALLBACK(applet_destroy), (gpointer)applet);
 
 	// Tooltip
@@ -349,7 +351,11 @@ static gboolean applet_main (MatePanelApplet *applet_widget, const gchar *iid, g
 
 	gtk_widget_show_all (GTK_WIDGET (applet->applet));
 
+#ifdef HAVE_GTK2
 	g_timeout_add(10000, (GtkFunction) applet_check_icon, (gpointer)applet);
+#elif HAVE_GTK3
+	g_timeout_add(10000, (GSourceFunc) applet_check_icon, (gpointer)applet);
+#endif
 
 	applet_listener(applet);
 
