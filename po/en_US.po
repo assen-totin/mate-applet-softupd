@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-27 20:47+0300\n"
+"POT-Creation-Date: 2015-07-28 23:05+0300\n"
 "PO-Revision-Date: 2012-06-27 21:04+0300\n"
 "Last-Translator: root <atotin@itdnet.net>\n"
 "Language-Team: English\n"
@@ -18,43 +18,58 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/main.c:46
-#, c-format
+#: src/main.c:179
+msgid "Cancel"
+msgstr "Cancel"
+
+# src/main.c:73
+#: src/main.c:127
+msgid "Could not launch installer:"
+msgstr "Could not launch installer:"
+
+# src/main.c:73
+#: src/main.c:127
+msgid "ERROR:"
+msgstr "ERROR:"
+
+#: src/main.c:131
+msgid "Error"
+msgstr "Error"
+
+#: src/main.c:160
 msgid "Install updates?"
 msgstr "Install updates?"
 
-#: src/main.c:44
+#: src/main.c:135 src/main.c:172
+msgid "OK"
+msgstr "OK"
+
+#: src/main.c:157
 #, c-format
 msgid "Pending updates: %u"
 msgstr "Pending updates: %u"
 
-#: src/main.c:77
-#, c-format
-msgid "You have %u updates. Click to proceed."
-msgstr "You have %u updates. Click to proceed."
-
-#: src/main.c:73 src/main.c:137
-msgid "Your system is up to date."
-msgstr "Your system is up to date."
-
 # src/main.c:73
-msgid "Software updates available."
+#: src/main.c:222
+#, fuzzy
+msgid "Software updates available"
 msgstr "Software updates available."
 
-#: src/main.c:77
+#: src/main.c:221
 #, c-format
 msgid "You have %u updates."
 msgstr "You have %u updates."
 
+#: src/main.c:216
+#, c-format
+msgid "You have %u updates. Click to proceed."
+msgstr "You have %u updates. Click to proceed."
+
 # src/main.c:73
+#: src/main.c:162
 msgid "You have to update your system manually."
 msgstr "You have to update your system manually."
 
-# src/main.c:73
-msgid "ERROR:"
-msgstr "ERROR:"
-
-# src/main.c:73
-msgid "Could not launch installer:"
-msgstr "Could not launch installer:"
-
+#: src/main.c:212 src/main.c:361
+msgid "Your system is up to date."
+msgstr "Your system is up to date."

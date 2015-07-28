@@ -1,5 +1,5 @@
 AC_PREREQ([2.66])
-AC_INIT([mate-applet-softupd], [0.4.0], [assen.totin@gmail.com])
+AC_INIT([mate-applet-softupd], [0.4.1], [assen.totin@gmail.com])
 AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([-Wall])
@@ -78,9 +78,11 @@ elif test $FORCE_GTK = "2" ; then
 		AC_MSG_ERROR(["*** GTK2 forced, but not found."])
 	fi
 else
+	# Only accept GTK3 if at least 3.14; else resort to GTK2
 	if test $FOUND_GTK3 = "1" ; then
 		AM_PATH_GTK_3_0([3.14.0], [USE_GTK="3"], [USE_GTK="0"])
-	elif test $FOUND_GTK2 = "1" ; then
+	fi
+	if test $FOUND_GTK2 = "1" -a $USE_GTK = "0" ; then
 		AM_PATH_GTK_2_0([2.24.0], [USE_GTK="2"], [USE_GTK="0"])
 	fi
 fi
@@ -335,6 +337,7 @@ fi
 
 RPM_REQUIRES_INSTALLER=""
 RPM_BUILDREQUIRES_INSTALLER=""
+AC_DEFINE_UNQUOTED([SELECTED_INSTALLER],["$SELECTED_INSTALLER"],[Define which installer was selected])
 if test $SELECTED_INSTALLER = "yumex" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$YUMEXVIEWER_INSTALLER"],[Define where is the installer binary])
 	RPM_REQUIRES_INSTALLER="Requires: yumex"

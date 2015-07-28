@@ -1,3 +1,9 @@
+Jul 28, 2015 - Version 0.4.1
+============================
+* More yumex and yumex-dnf tuning.
+* When autodetecting GTK version, autoconf will use GTK3 only if it is 3.14 
+or later, else will resort to GTK2.
+
 Jul 26, 2015 - Version 0.4.0
 ============================
 * Added GTK3 support.

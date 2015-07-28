@@ -65,7 +65,7 @@ static void quitDialogOK( GtkWidget *widget, gpointer data ){
 				// Child process
 				// This is ugly, but no other way around it right now: 
 				// yumex requires --root to run when UID is 0, so keep it happy.
-				if ((uid == 0) && (! strcmp(INSTALLER_BINARY, "yumex")))
+				if ((uid == 0) && (! strcmp(SELECTED_INSTALLER, "yumex")))
 					execl(INSTALLER_BINARY, INSTALLER_BINARY, "--root", NULL);
 				else
 					execl(INSTALLER_BINARY, INSTALLER_BINARY, NULL);
@@ -129,8 +129,11 @@ void warn_missing_installer(GtkWidget *widget) {
         GtkWidget *label = gtk_label_new (&msg1[0]);
 
         GtkWidget *quitDialog = gtk_dialog_new_with_buttons (_("Error"), GTK_WINDOW(widget), GTK_DIALOG_MODAL, NULL);
+#ifdef HAVE_GTK2
         GtkWidget *buttonOK = gtk_dialog_add_button (GTK_DIALOG(quitDialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
-
+#elif HAVE_GTK3
+        GtkWidget *buttonOK = gtk_dialog_add_button (GTK_DIALOG(quitDialog), _("OK"), GTK_RESPONSE_OK);
+#endif
         gtk_dialog_set_default_response (GTK_DIALOG (quitDialog), GTK_RESPONSE_CANCEL);
 
 		#ifdef HAVE_GTK2
@@ -163,10 +166,18 @@ static gboolean applet_on_button_press (GtkWidget *event_box, GdkEventButton *ev
 	label = gtk_label_new (&msg1[0]);
 
 	applet->quitDialog = gtk_dialog_new_with_buttons ("Software Updater", GTK_WINDOW(applet->event_box), GTK_DIALOG_MODAL, NULL);
+	#ifdef HAVE_GTK2
 	GtkWidget *buttonOK = gtk_dialog_add_button (GTK_DIALOG(applet->quitDialog), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	#elif HAVE_GTK3
+	GtkWidget *buttonOK = gtk_dialog_add_button (GTK_DIALOG(applet->quitDialog), _("OK"), GTK_RESPONSE_OK);
+	#endif
 
 	#ifdef INSTALLER_BINARY
-		GtkWidget *buttonCancel = gtk_dialog_add_button (GTK_DIALOG(applet->quitDialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+			#ifdef HAVE_GTK2
+	GtkWidget *buttonCancel = gtk_dialog_add_button (GTK_DIALOG(applet->quitDialog), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+			#elif HAVE_GTK3
+	GtkWidget *buttonCancel = gtk_dialog_add_button (GTK_DIALOG(applet->quitDialog), _("Cancel"), GTK_RESPONSE_CANCEL);
+			#endif
 	#endif
 
 	gtk_dialog_set_default_response (GTK_DIALOG (applet->quitDialog), GTK_RESPONSE_CANCEL);

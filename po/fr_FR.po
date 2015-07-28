@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-27 20:47+0300\n"
+"POT-Creation-Date: 2015-07-28 23:05+0300\n"
 "PO-Revision-Date: 2013-03-05 18:08+0100\n"
 "Last-Translator: Patrick Monnerat <pm@datasphere.ch>\n"
 "Language-Team: French\n"
@@ -17,43 +17,58 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/main.c:46
-#, c-format
+#: src/main.c:179
+msgid "Cancel"
+msgstr "Annuler"
+
+# src/main.c:73
+#: src/main.c:127
+msgid "Could not launch installer:"
+msgstr "Impossible de démarrer l'installateur:"
+
+# src/main.c:73
+#: src/main.c:127
+msgid "ERROR:"
+msgstr "ERREUR:"
+
+#: src/main.c:131
+msgid "Error"
+msgstr "Erreur"
+
+#: src/main.c:160
 msgid "Install updates?"
 msgstr "Installer les mises à jour?"
 
-#: src/main.c:44
+#: src/main.c:135 src/main.c:172
+msgid "OK"
+msgstr "OK"
+
+#: src/main.c:157
 #, c-format
 msgid "Pending updates: %u"
 msgstr "%u mise(s) à jour en instance"
 
-#: src/main.c:77
-#, c-format
-msgid "You have %u updates. Click to proceed."
-msgstr "Vous avez %u mise(s) à jour en instance. Cliquez pour les appliquer."
-
-#: src/main.c:73 src/main.c:137
-msgid "Your system is up to date."
-msgstr "Votre système est à jour."
-
 # src/main.c:73
-msgid "Software updates available."
+#: src/main.c:222
+#, fuzzy
+msgid "Software updates available"
 msgstr "Des mises à jours sont disponibles."
 
-#: src/main.c:77
+#: src/main.c:221
 #, c-format
 msgid "You have %u updates."
 msgstr "Vous avez %u mise(s) à jour."
 
+#: src/main.c:216
+#, c-format
+msgid "You have %u updates. Click to proceed."
+msgstr "Vous avez %u mise(s) à jour en instance. Cliquez pour les appliquer."
+
 # src/main.c:73
+#: src/main.c:162
 msgid "You have to update your system manually."
 msgstr "Vous devez mettre votre système à jour manuellement"
 
-# src/main.c:73
-msgid "ERROR:"
-msgstr "ERREUR:"
-
-# src/main.c:73
-msgid "Could not launch installer:"
-msgstr "Impossible de démarrer l'installateur:"
-
+#: src/main.c:212 src/main.c:361
+msgid "Your system is up to date."
+msgstr "Votre système est à jour."
