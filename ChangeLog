@@ -1,3 +1,7 @@
+Sep 28, 2015 - Version 0.4.2
+============================
+* Betteg GTK3 handling, detect panel version when building.
+
 Jul 28, 2015 - Version 0.4.1
 ============================
 * More yumex and yumex-dnf tuning.

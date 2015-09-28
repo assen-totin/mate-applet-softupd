@@ -1,5 +1,5 @@
 AC_PREREQ([2.66])
-AC_INIT([mate-applet-softupd], [0.4.1], [assen.totin@gmail.com])
+AC_INIT([mate-applet-softupd], [0.4.2], [assen.totin@gmail.com])
 AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([-Wall])
@@ -56,6 +56,18 @@ else
 	AC_SUBST([MSGFMT])
 fi
 
+# Early check for libmatepanelapplet: results can be used to auto-select the
+# GTK version.
+PKG_CHECK_MODULES([LIBMATEPANELAPPLET_4], [libmatepanelapplet-4.0], [FOUND_LMPA_4="yes"], [FOUND_LMPA_4="no"])
+PKG_CHECK_MODULES([LIBMATEPANELAPPLET_3], [libmatepanelapplet-3.0], [FOUND_LMPA_3="yes"], [FOUND_LMPA_3="no"])
+if test $FOUND_LMPA_4 = "yes" ; then
+	LIBMATEPANELAPPLET="libmatepanelapplet-4.0"
+elif test $FOUND_LMPA_3 = "yes" ; then
+	LIBMATEPANELAPPLET="libmatepanelapplet-3.0"
+else
+	AC_MSG_ERROR(["*** libmatepanelapplet not found."])
+fi
+
 # Check for GTK and determine version
 FORCE_GTK="no"
 RPM_REQUIRE_GTK=" "
@@ -78,8 +90,18 @@ elif test $FORCE_GTK = "2" ; then
 		AC_MSG_ERROR(["*** GTK2 forced, but not found."])
 	fi
 else
+	# Try to match the GTK version used by mate-panel.
+	PANEL_GTK=`$PKG_CONFIG --print-requires "$LIBMATEPANELAPPLET" 2>/dev/null |
+		grep -m 1 '^gtk+-'`
+	case "$PANEL_GTK" in
+	gtk+-3*)
+		AM_PATH_GTK_3_0([3.14.0], [USE_GTK="3"], [AC_MSG_ERROR(["*** GTK3 used by mate-panel, but no suitable version found."])]);;
+	gtk+-2*)
+		AM_PATH_GTK_2_0([2.24.0], [USE_GTK="2"], [AC_MSG_ERROR(["*** GTK2 used by mate-panel, but no suitable version found."])]);;
+	esac
+
 	# Only accept GTK3 if at least 3.14; else resort to GTK2
-	if test $FOUND_GTK3 = "1" ; then
+	if test $FOUND_GTK3 = "1" -a $USE_GTK = "0"; then
 		AM_PATH_GTK_3_0([3.14.0], [USE_GTK="3"], [USE_GTK="0"])
 	fi
 	if test $FOUND_GTK2 = "1" -a $USE_GTK = "0" ; then
@@ -416,15 +438,6 @@ fi
 # Check for packages
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
 PKG_CHECK_MODULES([PKGKIT_BLIB], [packagekit-glib2])
-PKG_CHECK_MODULES([LIBMATEPANELAPPLET_4], [libmatepanelapplet-4.0], [FOUND_LMPA_4="yes"], [FOUND_LMPA_4="no"])
-PKG_CHECK_MODULES([LIBMATEPANELAPPLET_3], [libmatepanelapplet-3.0], [FOUND_LMPA_3="yes"], [FOUND_LMPA_3="no"])
-if test $FOUND_LMPA_4 = "yes" ; then
-	LIBMATEPANELAPPLET="libmatepanelapplet-4.0"
-elif test $FOUND_LMPA_3 = "yes" ; then
-	LIBMATEPANELAPPLET="libmatepanelapplet-3.0"
-else
-	AC_MSG_ERROR(["*** libmatepanelapplet not found."])
-fi
 
 APPLET_FLAGS=`$PKG_CONFIG --cflags-only-I glib-2.0 $SELECTED_NOTIFY $LIBMATEPANELAPPLET $ADDITIONAL_PACKAGES`
 APPLET_LIBS=`$PKG_CONFIG --libs glib-2.0 $SELECTED_NOTIFY $LIBMATEPANELAPPLET $ADDITIONAL_PACKAGES`
