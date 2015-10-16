@@ -1,6 +1,11 @@
+Oct 16, 2015 - Version 0.4.3
+============================ 
+* Adding pt_BR and pt_PT translations by Ronan Arraes Jardim Chagas
+  <ronisbr@gmail.com> 
+
 Sep 28, 2015 - Version 0.4.2
 ============================
-* Betteg GTK3 handling, detect panel version when building.
+* Better GTK3 handling, detect panel version when building.
 
 Jul 28, 2015 - Version 0.4.1
 ============================
