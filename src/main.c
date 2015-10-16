@@ -26,23 +26,23 @@
 void warn_missing_installer(GtkWidget *widget);
 
 void push_notification (gchar *title, gchar *body, gchar *icon) {
-        NotifyNotification* notification;
+	NotifyNotification* notification;
 	GError* error = NULL;
 
 	notify_init(PACKAGE_NAME);
 
 #ifdef HAVE_LIBMATENOTIFY
-        notification = notify_notification_new (title, body, icon, NULL);
+	notification = notify_notification_new (title, body, icon, NULL);
 #elif HAVE_LIBNOTIFY
 	notification = notify_notification_new (title, body, icon);
 #endif
 
-        notify_notification_set_timeout (notification, 5000);
+	notify_notification_set_timeout (notification, 5000);
 
-        notify_notification_show (notification, &error);
+	notify_notification_show (notification, &error);
 
-        g_object_unref (G_OBJECT (notification));
-        notify_uninit ();
+	g_object_unref (G_OBJECT (notification));
+	notify_uninit ();
 }
 
 
