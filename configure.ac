@@ -313,6 +313,7 @@ else
 fi
 
 # Select which software installer to use
+SELECTED_INSTALLER="none"
 if test $FORCE_INSTALLER = "yumex" ; then
 	if test $CHECK_YUMEXVIEWER = "yes" ; then
 		SELECTED_INSTALLER="yumex"
@@ -352,8 +353,6 @@ else
         	SELECTED_INSTALLER="gpk-update-viewer"
 	elif test $CHECK_UPDATEMANAGER = "yes" ; then
         	SELECTED_INSTALLER="update-manager"
-	else
-		SELECTED_INSTALLER="none"
 	fi
 fi
 
