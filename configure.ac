@@ -207,7 +207,7 @@ elif test $FORCE_BACKEND = "yum-updatesd" ; then
 		ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
 	fi
 elif test $FORCE_BACKEND = "dnf" ; then
-	if test $CHECK_YUM = "no" ; then
+	if test $CHECK_DNF = "no" ; then
 		EXIT_NOW="yes"
 		EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
