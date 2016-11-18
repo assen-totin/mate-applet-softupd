@@ -207,7 +207,7 @@ elif test $FORCE_BACKEND = "yum-updatesd" ; then
 		ADDITIONAL_PACKAGES="dbus-1 dbus-glib-1"
 	fi
 elif test $FORCE_BACKEND = "dnf" ; then
-	if test $CHECK_YUM = "no" ; then
+	if test $CHECK_DNF = "no" ; then
 		EXIT_NOW="yes"
 		EXIT_MSG="Forced backend $FORCE_BACKEND not found. Cannot continue."
 	else
@@ -313,6 +313,7 @@ else
 fi
 
 # Select which software installer to use
+SELECTED_INSTALLER="none"
 if test $FORCE_INSTALLER = "yumex" ; then
 	if test $CHECK_YUMEXVIEWER = "yes" ; then
 		SELECTED_INSTALLER="yumex"
@@ -352,8 +353,6 @@ else
         	SELECTED_INSTALLER="gpk-update-viewer"
 	elif test $CHECK_UPDATEMANAGER = "yes" ; then
         	SELECTED_INSTALLER="update-manager"
-	else
-		SELECTED_INSTALLER="none"
 	fi
 fi
 
@@ -437,7 +436,9 @@ fi
 
 # Check for packages
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
-PKG_CHECK_MODULES([PKGKIT_BLIB], [packagekit-glib2])
+if test $SELECTED_BACKEND = "package-kit"
+then	PKG_CHECK_MODULES([PKGKIT_BLIB], [packagekit-glib2])
+fi
 
 APPLET_FLAGS=`$PKG_CONFIG --cflags-only-I glib-2.0 $SELECTED_NOTIFY $LIBMATEPANELAPPLET $ADDITIONAL_PACKAGES`
 APPLET_LIBS=`$PKG_CONFIG --libs glib-2.0 $SELECTED_NOTIFY $LIBMATEPANELAPPLET $ADDITIONAL_PACKAGES`
