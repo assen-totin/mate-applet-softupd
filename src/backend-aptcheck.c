@@ -26,7 +26,7 @@
 #include "../config.h"
 #include "applet.h"
 
-void aptcheck_main (softupd_applet *applet) {
+gboolean aptcheck_main (softupd_applet *applet) {
 	int pipefd[2];
 	pipe(pipefd);
 
@@ -68,5 +68,6 @@ void aptcheck_main (softupd_applet *applet) {
                         applet->flip_icon = 1;
 
 	}
+        return TRUE;
 }
 

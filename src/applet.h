@@ -56,9 +56,8 @@ typedef struct {
 } softupd_applet;
 
 // Prototypes
-gboolean packagekit_main();
-int yumupdatesd_main();
-void yum_main();
-void aptcheck_main();
-void aptget_main();
-void dnf_main();
+gboolean packagekit_main(softupd_applet *);
+gboolean yumupdatesd_main(softupd_applet *);
+gboolean yum_main(softupd_applet *);
+gboolean aptcheck_main(softupd_applet *);
+gboolean dnf_main(softupd_applet *);

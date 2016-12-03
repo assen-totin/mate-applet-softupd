@@ -59,7 +59,7 @@ static DBusHandlerResult signal_filter (DBusConnection *connection, DBusMessage 
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
-int yumupdatesd_main (softupd_applet *applet){
+gboolean yumupdatesd_main (softupd_applet *applet){
         DBusConnection *bus;
         DBusError error;
 
@@ -81,6 +81,6 @@ int yumupdatesd_main (softupd_applet *applet){
 
         g_main_loop_run(applet->loop);
 
-        return 1;
+        return TRUE;
 }
 
