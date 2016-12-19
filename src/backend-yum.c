@@ -25,7 +25,7 @@
 #include "../config.h"
 #include "applet.h"
 
-void yum_main (softupd_applet *applet) {
+gboolean yum_main (softupd_applet *applet) {
 	int pipefd[2];
 	pipe(pipefd);
 
@@ -79,5 +79,6 @@ void yum_main (softupd_applet *applet) {
         	        applet->flip_icon = 1;
 
 	}
+        return TRUE;
 }
 

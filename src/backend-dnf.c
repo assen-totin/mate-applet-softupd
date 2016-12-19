@@ -25,7 +25,7 @@
 #include "../config.h"
 #include "applet.h"
 
-void dnf_main (softupd_applet *applet) {
+gboolean dnf_main (softupd_applet *applet) {
 	int pipefd[2];
 	pipe(pipefd);
 
@@ -79,5 +79,6 @@ void dnf_main (softupd_applet *applet) {
         	        applet->flip_icon = 1;
 
 	}
+        return TRUE;
 }
 

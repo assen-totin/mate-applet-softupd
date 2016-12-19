@@ -280,16 +280,6 @@ static gboolean applet_listener(softupd_applet *applet) {
 		return TRUE;
 	#endif
 
-	#ifdef HAVE_APTGET
-		#ifdef HAVE_GTK2
-		g_timeout_add(REFRESH_TIME, (GtkFunction) aptget_main, (gpointer)applet);
-		#elif HAVE_GTK3
-		g_timeout_add(REFRESH_TIME, (GSourceFunc) aptget_main, (gpointer)applet);
-		#endif
-		applet->loop = g_main_loop_new (NULL, FALSE);
-		g_main_loop_run (applet->loop);
-		return TRUE;
-	#endif
 }
 
 
