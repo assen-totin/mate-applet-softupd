@@ -1,3 +1,8 @@
+Dec 20, 2016 - Version 0.4.5
+============================
+* Fix count in DNF backed.
+* Fix some updates not being spotted.
+
 Nov 19, 2016 - Version 0.4.4
 ============================ 
 * Fixes & updates in autoconf
