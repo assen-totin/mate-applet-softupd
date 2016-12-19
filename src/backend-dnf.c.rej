@@ -1,0 +1,37 @@
+--- src/backend-dnf.c
++++ src/backend-dnf.c
+@@ -25,6 +25,34 @@
+ #include "../config.h"
+ #include "applet.h"
+ 
++static int is_update_package(const char *line) {
++	int state = 0;
++
++	// Check if line is a package to update.
++	// Such lines have the form '^\S+\.\S+[ \t]'.
++
++	for (;;) {
++		switch (*line++) {
++		case ' ':
++		case '\t':
++			return state == 03;
++		case '\0':
++		case '\r':
++		case '\n':
++			return 0;
++		case '.':
++			if (!(state & 01))
++				return 0;
++			state = 02;
++			break;
++		default:
++			state |= 01;
++			break;
++		}
++	}
++}
++
++
+ void dnf_main (softupd_applet *applet) {
+ 	int pipefd[2];
+ 	pipe(pipefd);
