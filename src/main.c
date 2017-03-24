@@ -67,6 +67,9 @@ static void quitDialogOK( GtkWidget *widget, gpointer data ){
 				// yumex requires --root to run when UID is 0, so keep it happy.
 				if ((uid == 0) && (! strcmp(SELECTED_INSTALLER, "yumex")))
 					execl(INSTALLER_BINARY, INSTALLER_BINARY, "--root", NULL);
+				// dnfdragora requires --update-only to be run as updater.
+				else if (! strcmp(SELECTED_INSTALLER, "dnfdragora"))
+					execl(INSTALLER_BINARY, INSTALLER_BINARY, "--update-only", NULL);
 				else
 					execl(INSTALLER_BINARY, INSTALLER_BINARY, NULL);
 			}
