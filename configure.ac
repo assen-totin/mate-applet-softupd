@@ -312,6 +312,15 @@ else
         UPDATEMANAGER_INSTALLER=`which update-manager`
 fi
 
+# Check for dnfdragora
+AC_CHECK_PROG([CHECK_DNFDRAGORA],[dnfdragora],[yes],[no])
+if test $CHECK_DNFDRAGORA = "no" ; then
+        echo "*** dnfdragora not found."
+else
+        FOUND_INSTALLER="yes"
+        DNFDRAGORA_INSTALLER=`which dnfdragora`
+fi
+
 # Select which software installer to use
 SELECTED_INSTALLER="none"
 if test $FORCE_INSTALLER = "yumex" ; then
@@ -343,9 +352,18 @@ elif test $FORCE_INSTALLER = "update-manager" ; then
                 EXIT_NOW="yes"
                 EXIT_MSG="Forced installer $FORCE_INSTALLER not found. Cannot continue." 
         fi
+elif test $FORCE_INSTALLER = "dnfdragora" ; then
+        if test $CHECK_DNFDRAGORA = "yes" ; then
+                SELECTED_INSTALLER="dnfdragora"
+        else
+                EXIT_NOW="yes"
+                EXIT_MSG="Forced installer $FORCE_INSTALLER not found. Cannot continue." 
+        fi
 else
 	echo "Chosing installer wisely..."
-	if test $CHECK_YUMEXDNFVIEWER = "yes" ; then
+	if test $CHECK_DNFDRAGORA = "yes" ; then
+        	SELECTED_INSTALLER="dnfdragora"
+	elif test $CHECK_YUMEXDNFVIEWER = "yes" ; then
         	SELECTED_INSTALLER="yumex-dnf"
 	elif test $CHECK_YUMEXVIEWER = "yes" ; then
         	SELECTED_INSTALLER="yumex"
@@ -372,6 +390,8 @@ elif test $SELECTED_INSTALLER = "gpk-update-viewer" ; then
 	RPM_REQUIRES_INSTALLER="Requires: gnome-packagekit"
 elif test $SELECTED_INSTALLER = "update-manager" ; then
         AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$UPDATEMANAGER_INSTALLER"],[Define where is the installer binary])
+elif test $SELECTED_INSTALLER = "dnfdragora" ; then
+        AC_DEFINE_UNQUOTED([INSTALLER_BINARY],["$DNFDRAGORA_INSTALLER"],[Define where is the installer binary])
 else
 	echo "*** No suitable installer found. You will have to update the system manually."
 fi
