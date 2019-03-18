@@ -27,12 +27,21 @@
 
 gboolean yum_main (softupd_applet *applet) {
 	int pipefd[2];
-	pipe(pipefd);
+	if (pipe(pipefd) == -1) {
+		applet->pending = -1;
+		return TRUE;
+	}
 
 	int pid = fork();
 	
+	if (pid == -1) {
+		close(pipefd[0]);
+		close(pipefd[1]);
+		applet->pending = -1;
+        }
+
 	// CHILD
-	if (pid == 0) {
+	else if (pid == 0) {
 		// If there are aupdates, yum will return with exit code 100
 		// and print the updates on stdout, one per line. 
 		// We need to count them.
@@ -42,6 +51,7 @@ gboolean yum_main (softupd_applet *applet) {
                 close(pipefd[1]);
 
 		execlp(YUM_BINARY, YUM_BINARY, "check-update", (char *)NULL);
+                abort();
 	}
 
 	// PARENT
@@ -53,12 +63,18 @@ gboolean yum_main (softupd_applet *applet) {
 
 		close(pipefd[1]);
 		FILE *fp = fdopen(pipefd[0], "r");
+		if (fp == NULL) {
+			close(pipefd[0]);
+			applet->pending = -1;
+			return TRUE;
+		}
 		while (fgets(&line[0], 1024, fp)) {
 			line_cnt++;
 		}
+		fclose(fp);
 
 		waitpid(pid, &status, 0);
-		int exit_status = WEXITSTATUS(status);
+		int exit_status = WIFEXITED(status) ? WEXITSTATUS(status) : -1;
 
 		if (exit_status == 0) 
 			applet->pending = 0;

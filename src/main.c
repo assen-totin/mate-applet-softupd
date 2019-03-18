@@ -61,7 +61,10 @@ static void quitDialogOK( GtkWidget *widget, gpointer data ){
 			uid = getuid();
 
 			int pid = fork();
-			if (pid == 0) {
+			if (pid == -1) {
+				warn_missing_installer(widget);
+				return;
+			} else if (pid == 0) {
 				// Child process
 				// This is ugly, but no other way around it right now: 
 				// yumex requires --root to run when UID is 0, so keep it happy.
@@ -72,6 +75,7 @@ static void quitDialogOK( GtkWidget *widget, gpointer data ){
 					execl(INSTALLER_BINARY, INSTALLER_BINARY, "--update-only", NULL);
 				else
 					execl(INSTALLER_BINARY, INSTALLER_BINARY, NULL);
+				abort();
 			}
 			// Parent process continues
 			// Find a slot to store the PID; if none, realloc() one slot up and occupy it
@@ -157,7 +161,11 @@ static gboolean applet_on_button_press (GtkWidget *event_box, GdkEventButton *ev
 		return FALSE;
 
 	char msg1[1024];
-	sprintf(&msg1[0], _("Pending updates: %u"), applet->pending);
+	if (applet->pending >= 0) {
+		sprintf(&msg1[0], _("Pending updates: %u"), applet->pending);
+	} else {
+		sprintf(&msg1[0], _("Could not get count of pending updates"));
+	}
 	if (applet->pending > 0) {
 		#ifdef INSTALLER_BINARY
 			sprintf(&msg1[0],"%s\n%s", &msg1[0], _("Install updates?"));
@@ -216,12 +224,20 @@ static gboolean applet_check_icon (softupd_applet *applet) {
 	}
 	else {
 		sprintf(&image_file[0], "%s/%s", APPLET_ICON_PATH, APPLET_ICON_ON);
-		sprintf(&msg[0], _("You have %u updates. Click to proceed."), applet->pending);
+		if (applet->pending >= 0) {
+			sprintf(&msg[0], _("You have %u updates. Click to proceed."), applet->pending);
+		} else {
+			sprintf(&msg[0], _("Could not get count of pending updates."));
+		}
 		gtk_widget_set_tooltip_text (GTK_WIDGET (applet->applet), &msg[0]);
 
 		// Notification: only if icon status is ON and flip is ON
 		if (applet->flip_icon == 1) {
-			sprintf(&msg[0], _("You have %u updates."), applet->pending);
+			if (applet->pending >= 0) {
+				sprintf(&msg[0], _("You have %u updates."), applet->pending);
+			} else {
+				sprintf(&msg[0], _("Could not get count of pending updates."));
+			}
 			push_notification(_("Software updates available"), &msg[0], NULL);
 		}
 	}

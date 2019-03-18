@@ -28,18 +28,28 @@
 
 gboolean aptcheck_main (softupd_applet *applet) {
 	int pipefd[2];
-	pipe(pipefd);
+	if (pipe(pipefd) == -1) {
+		applet->pending = -1;
+		return TRUE;
+	}
 
 	int pid = fork();
 
+	if (pid == -1) {
+		close(pipefd[0]);
+		close(pipefd[1]);
+		applet->pending = -1;
+	}
+
 	// CHILD
-	if (pid == 0) {
+	else if (pid == 0) {
                 close(pipefd[0]);
                 dup2(pipefd[1], 1);
                 dup2(pipefd[1], 2);
                 close(pipefd[1]);
 
 		execlp(APTCHECK_BINARY, APTCHECK_BINARY, (char *)NULL);
+		abort();
 	}
 
 	// PARENT
@@ -48,14 +58,27 @@ gboolean aptcheck_main (softupd_applet *applet) {
 
                 char line[1024], res[32];
 		char *res_p = &res[0];
+                int result = -1;
                 close(pipefd[1]);
                 FILE *fp = fdopen(pipefd[0], "r");
-                fgets(&line[0], 1024, fp); 
-		res_p = strtok(&line[0], ";");
+		if (fp == NULL) {
+			close(pipefd[0]);
+			applet->pending = -1;
+			return TRUE;
+		}
+                if (fgets(&line[0], 1024, fp)) {
+			res_p = strtok(&line[0], ";");
+			result = atoi(res_p);
+			while (fgets(&line[0], 1024, fp)) ;
+		}
 
 		waitpid(pid, &status, 0);
+		fclose(fp);
 
-		applet->pending = atoi(res_p);
+                if (WIFEXITED(status))
+			applet->pending = result;
+		else
+			applet->pending = -1;
 
 		int tmp_icon = applet->icon_status;
 
