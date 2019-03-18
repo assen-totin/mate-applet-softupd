@@ -71,6 +71,9 @@ rm -rf "${RPM_BUILD_ROOT}"
 %{_datadir}/dbus-1/services/org.mate.panel.applet.SoftupdApplet.service
 
 %changelog
+* Mon Mar 18 2019 Assen Totin <assen.totin@gmail.com>
+- Release 0.4.8
+
 * Fri Jun 2 2017 Assen Totin <assen.totin@gmail.com>
 - Release 0.4.7
 
